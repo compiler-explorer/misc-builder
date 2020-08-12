@@ -23,7 +23,7 @@ DIR=$(pwd)/tendra
 git clone --depth 1 -b ${BRANCH} https://github.com/tendra/tendra.git ${DIR}
 
 # no -j (currently breaks)
-pmake -C ${DIR} TARGETARCH=x32_64
+pmake -C ${DIR} TARGETARCH=x32_64 LIBCVER=GLIBC_2_31
 pmake -C ${DIR} TARGETARCH=x32_64 bootstrap-rebuild
 # todo after this point...
 pmake -C ${DIR} PREFIX=${PREFIX} install
