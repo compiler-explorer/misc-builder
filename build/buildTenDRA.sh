@@ -18,18 +18,20 @@ else
     OUTPUT=${2-/root/tendra-${VERSION}.tar.xz}
 fi
 
-PREFIX=$(pwd)/prefix
+PREFIX_BOOTSTRAP=$(pwd)/prefix/bootstrap
+PREFIX_REBUILD=$(pwd)/prefix/rebuild
+
 DIR=$(pwd)/tendra
 git clone --depth 1 -b ${BRANCH} https://github.com/tendra/tendra.git ${DIR}
 
 # no -j (currently breaks)
-pmake -C ${DIR} TARGETARCH=x32_64
-pmake -C ${DIR} TARGETARCH=x32_64 bootstrap-rebuild
-# todo after this point...
-pmake -C ${DIR} PREFIX=${PREFIX} install
+pmake -C ${DIR} TARGETARCH=x32_64 LIBCVER=GLIBC2_31 OBJ_BPREFIX=${PREFIX_BOOTSTRAP}
+
+# this seems to ignore libcver somewhere?
+#pmake -C ${DIR} TARGETARCH=x32_64 LIBCVER=GLIBC2_31 OBJ_REBUILD=${PREFIX_REBUILD} bootstrap-rebuild
 
 export XZ_DEFAULTS="-T 0"
-tar Jcf ${OUTPUT} --transform "s,^./,./tendra-${VERSION}/," -C ${PREFIX} .
+tar Jcf ${OUTPUT} --transform "s,^./,./tendra-${VERSION}/," -C ${PREFIX_BOOTSTRAP} .
 
 if [[ ! -z "${S3OUTPUT}" ]]; then
     s3cmd put --rr ${OUTPUT} ${S3OUTPUT}
