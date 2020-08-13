@@ -5,7 +5,7 @@ set -ex
 VERSION=$1
 if echo ${VERSION} | grep 'trunk'; then
     VERSION=trunk-$(date +%Y%m%d)
-    BRANCH=main
+    BRANCH=envfixes
 else
     BRANCH=V${VERSION}
 fi
@@ -22,7 +22,7 @@ PREFIX_BOOTSTRAP=$(pwd)/prefix/bootstrap
 PREFIX_REBUILD=$(pwd)/prefix/rebuild
 
 DIR=$(pwd)/tendra
-git clone --depth 1 -b ${BRANCH} https://github.com/tendra/tendra.git ${DIR}
+git clone --depth 1 -b ${BRANCH} https://github.com/partouf/tendra.git ${DIR}
 
 # no -j (currently breaks)
 pmake -C ${DIR} TARGETARCH=x32_64 LIBCVER=GLIBC2_31 OBJ_BPREFIX=${PREFIX_BOOTSTRAP}
