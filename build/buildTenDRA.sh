@@ -25,10 +25,10 @@ DIR=$(pwd)/tendra
 git clone --depth 1 -b ${BRANCH} https://github.com/partouf/tendra.git ${DIR}
 
 # no -j (currently breaks)
-pmake -C ${DIR} TARGETARCH=x32_64 LIBCVER=GLIBC2_31 OBJ_BPREFIX=${PREFIX_BOOTSTRAP}
+pmake -C ${DIR} TARGETARCH=x32_64 OBJ_BPREFIX=${PREFIX_BOOTSTRAP}
 
 # this seems to ignore libcver somewhere?
-#pmake -C ${DIR} TARGETARCH=x32_64 LIBCVER=GLIBC2_31 OBJ_REBUILD=${PREFIX_REBUILD} bootstrap-rebuild
+#pmake -C ${DIR} TARGETARCH=x32_64 OBJ_REBUILD=${PREFIX_REBUILD} bootstrap-rebuild
 
 export XZ_DEFAULTS="-T 0"
 tar Jcf ${OUTPUT} --transform "s,^./,./tendra-${VERSION}/," -C ${PREFIX_BOOTSTRAP} .
