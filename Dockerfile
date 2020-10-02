@@ -7,6 +7,7 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     apt install -y -q \
     bmake \
     curl \
+    g++ \
     gcc \
     gcc-multilib \
     git \
