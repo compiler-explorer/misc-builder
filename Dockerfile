@@ -16,7 +16,8 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     linux-libc-dev \
     make \
     s3cmd \
-    xz-utils
+    xz-utils \
+    texinfo
 
 RUN mkdir -p /root
 COPY build /root/
