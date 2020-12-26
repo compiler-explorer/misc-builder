@@ -38,7 +38,7 @@ if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
     exit
 fi
 
-STAGING_DIR=$(pwd)/staging
+STAGING_DIR=/opt/compiler-explorer/tinycc-${VERSION}
 
 rm -rf "${STAGING_DIR}"
 mkdir -p "${STAGING_DIR}"
