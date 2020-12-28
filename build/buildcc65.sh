@@ -10,6 +10,8 @@ else
     BRANCH=V${VERSION}
 fi
 
+URL=https://github.com/cc65/cc65.git
+
 OUTPUT=/root/cc65-${VERSION}.tar.xz
 S3OUTPUT=""
 if echo $2 | grep s3://; then
@@ -18,9 +20,20 @@ else
     OUTPUT=${2-/root/cc65-${VERSION}.tar.xz}
 fi
 
+CC65_REVISION=$(git ls-remote --heads ${URL} refs/heads/${BRANCH} | cut -f 1)
+REVISION="cc65-${CC65_REVISION}"
+LAST_REVISION="${3}"
+
+echo "ce-build-revision:${REVISION}"
+
+if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
+    echo "ce-build-status:SKIPPED"
+    exit
+fi
+
 PREFIX=$(pwd)/prefix
 DIR=$(pwd)/cc65
-git clone --depth 1 -b ${BRANCH} https://github.com/cc65/cc65.git ${DIR}
+git clone --depth 1 -b ${BRANCH} ${URL} ${DIR}
 
 # no -j (maybe breaks?)
 make -C ${DIR}
