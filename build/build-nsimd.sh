@@ -50,10 +50,12 @@ install_cuda() {
     popd
 }
 
+mkdir -p /opt/compiler-explorer/arm
 mkdir -p /opt/compiler-explorer/arm64
 pushd /opt/compiler-explorer
 curl -sL https://s3.amazonaws.com/compiler-explorer/opt/gcc-6.1.0.tar.xz | tar Jxf -
 curl -sL https://s3.amazonaws.com/compiler-explorer/opt/gcc-10.2.0.tar.xz | tar Jxf -
+curl -sL https://compiler-explorer.s3.amazonaws.com/opt/arm-gcc-8.2.0.tar.xz | tar Jxf - -C arm
 curl -sL https://compiler-explorer.s3.amazonaws.com/opt/arm64-gcc-8.2.0.tar.xz | tar Jxf - -C arm64
 install_cuda https://developer.nvidia.com/compute/cuda/9.1/Prod/local_installers/cuda_9.1.85_387.26_linux 9.1.85
 popd
