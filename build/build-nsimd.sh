@@ -18,10 +18,34 @@ else
     fi
 fi
 
+install_cuda() {
+    local URL=$1
+    mkdir -p cuda
+    pushd cuda
+    local DIR=$(pwd)/$2
+    if [[ ! -d ${DIR} ]]; then
+        rm -rf /tmp/cuda
+        mkdir -p /tmp/cuda
+        fetch ${URL} >/tmp/cuda/combined.sh
+        sh /tmp/cuda/combined.sh --extract=/tmp/cuda
+        local LINUX=$(ls -1 /tmp/cuda/cuda-linux.$2*.run 2>/dev/null || true)
+        if [[ -f ${LINUX} ]]; then
+            ${LINUX} --prefix=${DIR} -noprompt -nosymlink -no-man-page
+        else
+            # As of CUDA 10.1, the toolkit is already extracted here.
+            mv /tmp/cuda/cuda-toolkit ${DIR}
+        fi
+        rm -rf /tmp/cuda
+    fi
+    popd
+}
+
 mkdir -p /opt/compiler-explorer/arm64
 pushd /opt/compiler-explorer
+curl -sL https://s3.amazonaws.com/compiler-explorer/opt/gcc-6.1.0.tar.xz | tar Jxf -
 curl -sL https://s3.amazonaws.com/compiler-explorer/opt/gcc-10.2.0.tar.xz | tar Jxf -
 curl -sL https://compiler-explorer.s3.amazonaws.com/opt/arm64-gcc-8.2.0.tar.xz | tar Jxf - -C arm64
+install_cuda https://developer.nvidia.com/compute/cuda/9.1/Prod/local_installers/cuda_9.1.85_387.26_linux 9.1.85
 popd
 
 git clone --depth 1 --single-branch -b "${VERSION}" https://github.com/agenium-scale/nsimd.git
