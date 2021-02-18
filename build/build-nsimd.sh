@@ -36,24 +36,34 @@ cd build
 PREFIX=/opt/compiler-explorer/libs/nsimd/${VERSION}
 
 ## x86_64
-COMP_ROOT=/opt/compiler-explorer/gcc-10.2.0
-CCOMP=${COMP_ROOT}/bin/gcc
-CPPCOMP=${COMP_ROOT}/bin/g++
-
+export PATH=/opt/compiler-explorer/gcc-10.2.0/bin:${PATH}
 ../nstools/bin/nsconfig .. -Dbuild_library_only=true -Dsimd=avx512_skylake \
-                            -prefix=${PREFIX}/x86_64 \
-                            -Ggnumake \
-                            -ccomp=gcc,"${CCOMP}",10.2.0,x86_64 \
-                            -cppcomp=gcc,"${CPPCOMP}",10.2.0,x86_64
+                        -prefix=${PREFIX}/x86_64 \
+                        -Ggnumake \
+                        -suite=gcc
 make
 make install
 
 ## CUDA
+export PATH=/opt/compiler-explorer/cuda/9.1.85/bin:/opt/compiler-explorer/gcc-6.1.0/bin:${PATH}
 ../nstools/bin/nsconfig .. -Dbuild_library_only=true -Dsimd=cuda \
                             -prefix=${PREFIX}/cuda \
                             -Ggnumake \
-                            -ccomp=gcc,"${CCOMP}",10.2.0,x86_64 \
-                            -cppcomp=gcc,"${CPPCOMP}",10.2.0,x86_64
+                            -Dstatic_libstdcpp=true \
+                            -suite=cuda
+make
+make install
+
+## ARM32 (armel)
+COMP_ROOT=/opt/compiler-explorer/arm/gcc-8.2.0/arm-unknown-linux-gnueabi/bin
+CCOMP=${COMP_ROOT}/arm-unknown-linux-gnueabi-gcc
+CPPCOMP=${COMP_ROOT}/arm-unknown-linux-gnueabi-g++
+
+../nstools/bin/nsconfig .. -Dbuild_library_only=true -Dsimd=neon128 \
+                            -prefix=${PREFIX}/arm/neon128 \
+                            -Ggnumake \
+                            -comp=cc,gcc,"${CCOMP}",8.2.0,armel \
+                            -comp=c++,gcc,"${CPPCOMP}",8.2.0,armel
 make
 make install
 
@@ -63,10 +73,10 @@ CCOMP=${COMP_ROOT}/aarch64-unknown-linux-gnu-gcc
 CPPCOMP=${COMP_ROOT}/aarch64-unknown-linux-gnu-g++
 
 ../nstools/bin/nsconfig .. -Dbuild_library_only=true -Dsimd=aarch64 \
-                            -prefix=${PREFIX}/aarch64 \
+                            -prefix=${PREFIX}/arm/aarch64 \
                             -Ggnumake \
-                            -ccomp=gcc,"${CCOMP}",8.2.0,aarch64 \
-                            -cppcomp=gcc,"${CPPCOMP}",8.2.0,aarch64
+                            -comp=cc,gcc,"${CCOMP}",8.2.0,aarch64 \
+                            -comp=c++,gcc,"${CPPCOMP}",8.2.0,aarch64
 make
 make install
 
