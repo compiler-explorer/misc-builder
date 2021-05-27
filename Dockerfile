@@ -17,7 +17,8 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     make \
     s3cmd \
     xz-utils \
-    texinfo
+    texinfo \
+    zlib
 
 RUN mkdir -p /root
 COPY build /root/
