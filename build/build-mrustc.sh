@@ -40,7 +40,7 @@ find output/ \( -name '*_dbg.txt' -or -name '*.c' -or -name '*.txt' \) -exec rm 
 # Don't try to compress the binaries as they don't like it
 
 export XZ_DEFAULTS="-T 0"
-tar Jcf "${OUTPUT}" ./bin/ ./output/
+tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," ./bin/ ./output/
 
 if [[ -n "${S3OUTPUT}" ]]; then
     s3cmd put --rr "${OUTPUT}" "${S3OUTPUT}"
