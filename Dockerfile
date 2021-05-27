@@ -18,7 +18,7 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     s3cmd \
     xz-utils \
     texinfo \
-    zliblg-dev
+    zlib1g-dev
 
 
 RUN mkdir -p /root
