@@ -8,7 +8,7 @@ set -exu
 ROOT=$PWD
 VERSION=$1
 
-FULLNAME=mrustc-${VERSION}
+FULLNAME=mrustc-${VERSION}-$(date +%Y%m%d)
 
 OUTPUT=${ROOT}/${FULLNAME}.tar.xz
 S3OUTPUT=
@@ -40,7 +40,7 @@ find output/ \( -name '*_dbg.txt' -or -name '*.c' -or -name '*.txt' \) -exec rm 
 # Don't try to compress the binaries as they don't like it
 
 export XZ_DEFAULTS="-T 0"
-tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," ./bin/ ./output/
+tar Jcf "${OUTPUT}" ./bin/ ./output/
 
 if [[ -n "${S3OUTPUT}" ]]; then
     s3cmd put --rr "${OUTPUT}" "${S3OUTPUT}"
