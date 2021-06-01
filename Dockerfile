@@ -11,6 +11,7 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     gcc \
     gcc-multilib \
     git \
+    flex \
     libc6-dev-i386 \
     libc6-dev:i386 \
     linux-libc-dev \
