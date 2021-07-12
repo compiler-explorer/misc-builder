@@ -2,12 +2,12 @@
 
 ## $1 : version, like v0.9 (tag) or master (branch)
 ## $2 : destination: a directory or S3 path (eg. s3://...)
-
+## $3 : last revision successfully build
 set -exu
 
 ROOT=$PWD
 VERSION=$1
-
+LAST_REVISION=$3
 FULLNAME=mrustc-${VERSION}-$(date +%Y%m%d)
 
 OUTPUT=${ROOT}/${FULLNAME}.tar.xz
@@ -22,9 +22,25 @@ else
     fi
 fi
 
+if [[ "${VERSION}" != "master" ]]; then
+    echo "Only support building master"
+    exit 1
+fi
+
+URL="https://github.com/thepowersgang/mrustc.git"
+BRANCH="${VERSION}"
+REVISION=$(git ls-remote --heads "${URL}" "refs/heads/${BRANCH}" | cut -f 1)
+
+echo "ce-build-revision:${REVISION}"
+
+if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
+    echo "ce-build-status:SKIPPED"
+    exit
+fi
+
 OUTPUT=$(realpath "${OUTPUT}")
 
-git clone --depth 1 --single-branch -b "${VERSION}" https://github.com/thepowersgang/mrustc.git
+git clone --depth 1 --single-branch -b "${BRANCH}" "${URL}"
 cd mrustc
 
 # build mrustc
