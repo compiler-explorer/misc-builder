@@ -6,6 +6,7 @@ RUN dpkg --add-architecture i386
 RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     apt install -y -q \
     bmake \
+    cmake \
     curl \
     g++ \
     gcc \
