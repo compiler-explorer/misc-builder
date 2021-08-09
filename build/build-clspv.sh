@@ -54,11 +54,12 @@ pushd clspv
 python3 utils/fetch_sources.py --shallow
 
 mkdir build
-cmake -S . -B build -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${STAGING_DIR}"
+cmake -S . -B build -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX:PATH="${STAGING_DIR}"
 cmake --build build --parallel $(nproc)
+make install
 
 export XZ_DEFAULTS="-T 0"
-tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," -C "./${STAGING_DIR}" .
+tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," -C "${STAGING_DIR}" .
 
 if [[ -n "${S3OUTPUT}" ]]; then
     s3cmd put --rr "${OUTPUT}" "${S3OUTPUT}"
