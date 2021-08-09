@@ -17,6 +17,7 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     libc6-dev:i386 \
     linux-libc-dev \
     make \
+    python3 \
     s3cmd \
     xz-utils \
     texinfo \
