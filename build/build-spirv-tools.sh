@@ -52,7 +52,7 @@ pushd SPIRV-Tools
 
 mkdir build
 cmake -S . -B build -G "Unix Makefiles"
-cmake --build build
+cmake --build build --parallel $(nproc)
 
 export XZ_DEFAULTS="-T 0"
 tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," ./
