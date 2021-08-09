@@ -55,6 +55,7 @@ cmake -S . -B build -G "Unix Makefiles"
 cmake --build build --parallel $(nproc)
 
 export XZ_DEFAULTS="-T 0"
+cd build
 tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," ./
 
 if [[ -n "${S3OUTPUT}" ]]; then
