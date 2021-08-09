@@ -44,6 +44,9 @@ fi
 set -u
 
 OUTPUT=$(realpath "${OUTPUT}")
+STAGING_DIR=/opt/compiler-explorer/clspv-master
+
+mkdir -p "${STAGING_DIR}"
 
 git clone --depth 1 "${URL}" --branch "${BRANCH}"
 pushd clspv
@@ -51,12 +54,11 @@ pushd clspv
 python3 utils/fetch_sources.py
 
 mkdir build
-cmake -S . -B build -G "Unix Makefiles"
+cmake -S . -B build -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${STAGING_DIR}"
 cmake --build build --parallel $(nproc)
 
 export XZ_DEFAULTS="-T 0"
-cd build
-tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," ./
+tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," -C "./${STAGING_DIR}" .
 
 if [[ -n "${S3OUTPUT}" ]]; then
     s3cmd put --rr "${OUTPUT}" "${S3OUTPUT}"
