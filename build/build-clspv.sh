@@ -51,7 +51,7 @@ mkdir -p "${STAGING_DIR}"
 git clone --depth 1 "${URL}" --branch "${BRANCH}"
 pushd clspv
 
-python3 utils/fetch_sources.py
+python3 utils/fetch_sources.py --shallow
 
 mkdir build
 cmake -S . -B build -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${STAGING_DIR}"
