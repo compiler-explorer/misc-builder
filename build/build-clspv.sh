@@ -56,7 +56,6 @@ python3 utils/fetch_sources.py --shallow
 mkdir build
 cmake -S . -B build -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX:PATH="${STAGING_DIR}"
 cmake --build build --parallel $(nproc)
-make install
 
 export XZ_DEFAULTS="-T 0"
 tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," -C "${STAGING_DIR}" .
