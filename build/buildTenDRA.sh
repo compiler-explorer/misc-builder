@@ -2,10 +2,21 @@
 
 set -ex
 
+URL=https://github.com/tendra/tendra.git
+
 VERSION=$1
 if echo ${VERSION} | grep 'trunk'; then
     VERSION=trunk-$(date +%Y%m%d)
     BRANCH=main
+    LAST_REVISION="${3}"
+
+    REVISION=$(git ls-remote --heads "${URL}" "refs/heads/${BRANCH}" | cut -f 1)
+    echo "ce-build-revision:${REVISION}"
+
+    if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
+        echo "ce-build-status:SKIPPED"
+        exit
+    fi
 else
     BRANCH=V${VERSION}
 fi
@@ -22,7 +33,7 @@ PREFIX_BOOTSTRAP=$(pwd)/prefix/bootstrap
 PREFIX_REBUILD=$(pwd)/prefix/rebuild
 
 DIR=$(pwd)/tendra
-git clone --depth 1 -b ${BRANCH} https://github.com/tendra/tendra.git ${DIR}
+git clone --depth 1 -b ${BRANCH} ${URL} ${DIR}
 
 # no -j (currently breaks)
 pmake -C ${DIR} TARGETARCH=x32_64 OBJ_BPREFIX=${PREFIX_BOOTSTRAP}
