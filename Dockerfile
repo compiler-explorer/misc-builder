@@ -20,6 +20,8 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     python3 \
     s3cmd \
     xz-utils \
+    unzip \
+    subversion \
     texinfo \
     zlib1g-dev
 
