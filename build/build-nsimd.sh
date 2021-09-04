@@ -121,6 +121,6 @@ make install
 export XZ_DEFAULTS="-T 0"
 tar Jcf ${OUTPUT} --transform "s,^./,./${FULLNAME}/," -C ${PREFIX} .
 
-if [[ ! -z "${S3OUTPUT}" ]]; then
-    s3cmd put --rr ${OUTPUT} ${S3OUTPUT}
+if [[ -n "${S3OUTPUT}" ]]; then
+    aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
 fi

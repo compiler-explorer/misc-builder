@@ -59,5 +59,5 @@ export XZ_DEFAULTS="-T 0"
 tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," ./bin/ ./output/
 
 if [[ -n "${S3OUTPUT}" ]]; then
-    s3cmd put --rr "${OUTPUT}" "${S3OUTPUT}"
+    aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
 fi
