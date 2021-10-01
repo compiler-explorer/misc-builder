@@ -2,13 +2,13 @@
 
 ## $1 : version, currently cproc does not have any and only uses master branch.
 ## $2 : destination: a directory or S3 path (eg. s3://...)
-## $3 : last revision successfully build
+## $3 : last revision successfully build (optional)
 
 set -ex
 
 ROOT=$PWD
 VERSION="${1}"
-LAST_REVISION="${3}"
+LAST_REVISION="${3-}"
 
 if [[ "${VERSION}" != "master" ]]; then
     echo "Only support building master"

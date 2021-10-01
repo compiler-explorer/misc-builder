@@ -2,12 +2,12 @@
 
 ## $1 : version, like v0.9 (tag) or master (branch)
 ## $2 : destination: a directory or S3 path (eg. s3://...)
-## $3 : last revision successfully build
+## $3 : last revision successfully build (optional)
 set -exu
 
 ROOT=$PWD
 VERSION=$1
-LAST_REVISION=$3
+LAST_REVISION=${3-}
 FULLNAME=mrustc-${VERSION}-$(date +%Y%m%d)
 
 OUTPUT=${ROOT}/${FULLNAME}.tar.xz
