@@ -1,0 +1,72 @@
+From 096c248718795c4b52df47dc16941615e6806a5c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marc=20Poulhi=C3=A8s?= <dkm@kataplop.net>
+Date: Tue, 19 Oct 2021 22:04:34 +0200
+Subject: [PATCH] Supports for getting version with --version
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Very basic support for getting version with --version. Currently configure gets
+the current SHA1 from the git repository and use this as version.
+
+Signed-off-by: Marc Poulhiès <dkm@kataplop.net>
+---
+ configure |  6 ++++++
+ driver.c  | 10 ++++++++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/configure b/configure
+index be7a95b..615b23e 100755
+--- a/configure
++++ b/configure
+@@ -164,6 +164,12 @@ static const char *const linkcmd[]       = {"$DEFAULT_LINKER", $linkflags};
+ EOF
+ echo done
+ 
++VERSION_STRING=$(git rev-parse HEAD)
++printf "creating version.h..."
++cat >version.h <<EOF
++#define VERSION_STRING "$VERSION_STRING"
++EOF
++
+ printf "creating config.mk... "
+ cat >config.mk <<EOF
+ PREFIX=$prefix
+diff --git a/driver.c b/driver.c
+index 441078e..7996b92 100644
+--- a/driver.c
++++ b/driver.c
+@@ -16,6 +16,7 @@
+ #include <unistd.h>
+ 
+ #include "util.h"
++#include "version.h"
+ 
+ enum filetype {
+ 	NONE,   /* detect based on file extension */
+@@ -64,6 +65,13 @@ static struct stageinfo stages[] = {
+ 	[LINK]       = {.name = "link"},
+ };
+ 
++static void
++version(void)
++{
++        fprintf(stderr, "version: " VERSION_STRING "\n");
++        exit(2);
++}
++
+ static void
+ usage(const char *fmt, ...)
+ {
+@@ -448,6 +456,8 @@ main(int argc, char *argv[])
+ 		} else if (strcmp(arg, "-pthread") == 0) {
+ 			arrayaddptr(&stages[LINK].cmd, "-l");
+ 			arrayaddptr(&stages[LINK].cmd, "pthread");
++		} else if (strcmp(arg, "--version") == 0) {
++                        version();
+ 		} else {
+ 			if (arg[2] != '\0' && strchr("cESsv", arg[1]))
+ 				usage(NULL);
+-- 
+2.33.0
+
