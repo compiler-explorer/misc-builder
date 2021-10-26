@@ -53,6 +53,9 @@ pushd build-cproc
 git clone --depth 1 "${URL}" --branch "${BRANCH}"
 pushd cproc
 
+## Temporary (hopefully) patch to support basic --version
+git am ../../cproc-version.patch
+
 ./configure
 
 git submodule update --init --recursive
