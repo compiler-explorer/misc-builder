@@ -54,6 +54,13 @@ git clone --depth 1 "${URL}" --branch "${BRANCH}"
 pushd cproc
 
 ## Temporary (hopefully) patch to support basic --version
+##
+## The following 2 lines are needed on virgin system where nothing is
+## configured. git really needs something here, or it will fail. Even using
+## --author is not enough.
+git config user.email || git config user.email "none@example.com"
+git config user.name || git config user.name "None"
+
 git am ../../cproc-version.patch
 
 ./configure
