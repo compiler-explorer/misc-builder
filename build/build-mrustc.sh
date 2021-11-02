@@ -32,6 +32,7 @@ BRANCH="${VERSION}"
 REVISION=$(git ls-remote --heads "${URL}" "refs/heads/${BRANCH}" | cut -f 1)
 
 echo "ce-build-revision:${REVISION}"
+echo "ce-build-output:${OUTPUT}"
 
 if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
     echo "ce-build-status:SKIPPED"
@@ -61,3 +62,5 @@ tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," ./bin/ ./output/
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
 fi
+
+echo "ce-build-status:OK"

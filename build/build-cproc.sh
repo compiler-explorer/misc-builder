@@ -18,26 +18,26 @@ fi
 URL="https://github.com/michaelforney/cproc.git"
 BRANCH="master"
 
-REVISION=$(git ls-remote --heads "${URL}" "refs/heads/${BRANCH}" | cut -f 1)
-echo "ce-build-revision:${REVISION}"
-
-if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
-    echo "ce-build-status:SKIPPED"
-    exit
-fi
-
-FULLNAME=cproc-${VERSION}-$(date +%Y%m%d)
-
-OUTPUT=${ROOT}/${FULLNAME}.tar.xz
+FULLNAME=cproc-${VERSION}-$(date +%Y%m%d).tar.xz
+OUTPUT=${ROOT}/${FULLNAME}
 S3OUTPUT=
 if [[ $2 =~ ^s3:// ]]; then
     S3OUTPUT=$2
 else
     if [[ -d "${2}" ]]; then
-        OUTPUT=$2/${FULLNAME}.tar.xz
+        OUTPUT=$2/${FULLNAME}
     else
         OUTPUT=${2-$OUTPUT}
     fi
+fi
+
+REVISION=$(git ls-remote --heads "${URL}" "refs/heads/${BRANCH}" | cut -f 1)
+echo "ce-build-revision:${REVISION}"
+echo "ce-build-output:${OUTPUT}"
+
+if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
+    echo "ce-build-status:SKIPPED"
+    exit
 fi
 
 ## From now, no unset variable
@@ -87,3 +87,4 @@ fi
 
 popd
 popd
+echo "ce-build-status:OK"

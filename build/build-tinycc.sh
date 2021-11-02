@@ -19,12 +19,17 @@ else
     BRANCH=release_${VERSION_UNDERSCORES}
 fi
 
-OUTPUT=/root/tinycc-${VERSION}.tar.xz
-S3OUTPUT=""
-if echo "$2" | grep s3://; then
+FULLNAME=tinycc-${VERSION}.tar.xz
+OUTPUT=${ROOT}/${FULLNAME}
+S3OUTPUT=
+if [[ $2 =~ ^s3:// ]]; then
     S3OUTPUT=$2
 else
-    OUTPUT=${2-/root/tinycc-${VERSION}.tar.xz}
+    if [[ -d "${2}" ]]; then
+        OUTPUT=$2/${FULLNAME}
+    else
+        OUTPUT=${2-$OUTPUT}
+    fi
 fi
 
 TINYCC_REVISION=$(git ls-remote --heads ${URL} refs/heads/${BRANCH} | cut -f 1)
@@ -32,6 +37,7 @@ REVISION="tinycc-${TINYCC_REVISION}"
 LAST_REVISION="${3}"
 
 echo "ce-build-revision:${REVISION}"
+echo "ce-build-output:${OUTPUT}"
 
 if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
     echo "ce-build-status:SKIPPED"
@@ -57,3 +63,5 @@ tar Jcf "${OUTPUT}" --transform "s,^./,./tinycc-${VERSION}/," -C "${STAGING_DIR}
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
 fi
+
+echo "ce-build-status:OK"

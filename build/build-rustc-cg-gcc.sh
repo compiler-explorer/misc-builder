@@ -24,26 +24,26 @@ CG_GCC_URL="https://github.com/antoyo/rustc_codegen_gcc.git"
 GCC_REVISION=$(git ls-remote --heads "${GCC_URL}" "refs/heads/${GCC_BRANCH}" | cut -f 1)
 CG_GCC_REVISION=$(git ls-remote --heads "${CG_GCC_URL}" "refs/heads/${CG_GCC_BRANCH}" | cut -f 1)
 
-REVISION="cggcc-${CG_GCC_REVISION}-gcc-${GCC_REVISION}"
-echo "ce-build-revision:${REVISION}"
-
-if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
-    echo "ce-build-status:SKIPPED"
-    exit
-fi
-
-FULLNAME=rustc-cg-gcc-${VERSION}-$(date +%Y%m%d)
-
-OUTPUT=${ROOT}/${FULLNAME}.tar.xz
+FULLNAME=rustc-cg-gcc-${VERSION}-$(date +%Y%m%d).tar.xz
+OUTPUT=${ROOT}/${FULLNAME}
 S3OUTPUT=
 if [[ $2 =~ ^s3:// ]]; then
     S3OUTPUT=$2
 else
     if [[ -d "${2}" ]]; then
-        OUTPUT=$2/${FULLNAME}.tar.xz
+        OUTPUT=$2/${FULLNAME}
     else
         OUTPUT=${2-$OUTPUT}
     fi
+fi
+
+REVISION="cggcc-${CG_GCC_REVISION}-gcc-${GCC_REVISION}"
+echo "ce-build-revision:${REVISION}"
+echo "ce-build-output:${OUTPUT}"
+
+if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
+    echo "ce-build-status:SKIPPED"
+    exit
 fi
 
 ## From now, no unset variable
@@ -205,3 +205,5 @@ tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," ./
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
 fi
+
+echo "ce-build-status:OK"
