@@ -2,13 +2,13 @@
 
 ## $1 : version, currently rustc_cg_gcc does not have any and only uses master branch.
 ## $2 : destination: a directory or S3 path (eg. s3://...)
-## $3 : last revision (as mangled below) successfully build
+## $3 : last revision (as mangled below) successfully build (optional)
 
 set -e
 
 ROOT=$PWD
 VERSION="${1}"
-LAST_REVISION="${3}"
+LAST_REVISION="${3-}"
 
 if [[ "${VERSION}" != "master" ]]; then
     echo "Only support building master"
@@ -19,7 +19,7 @@ GCC_URL="https://github.com/antoyo/gcc.git"
 GCC_BRANCH="master"
 
 CG_GCC_BRANCH="master"
-CG_GCC_URL="https://github.com/antoyo/rustc_codegen_gcc.git"
+CG_GCC_URL="https://github.com/rust-lang/rustc_codegen_gcc.git"
 
 GCC_REVISION=$(git ls-remote --heads "${GCC_URL}" "refs/heads/${GCC_BRANCH}" | cut -f 1)
 CG_GCC_REVISION=$(git ls-remote --heads "${CG_GCC_URL}" "refs/heads/${CG_GCC_BRANCH}" | cut -f 1)
