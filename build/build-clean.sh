@@ -41,6 +41,8 @@ else
     OUTPUT=${2-/root/${PROJVERSION}.tar.xz}
 fi
 
+echo "ce-build-output:${OUTPUT}"
+
 STARTDIR=$(pwd)
 DIR=${STARTDIR}/${PROJNAME}
 git clone --depth 1 -b ${BRANCH} ${URL} ${DIR}
@@ -62,3 +64,5 @@ tar Jcf ${OUTPUT} --transform "s,^./,./${PROJVERSION}/," -C ${PREFIX}/clean .
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
 fi
+
+echo "ce-build-status:OK"
