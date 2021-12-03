@@ -39,7 +39,7 @@ if echo $2 | grep s3://; then
     S3OUTPUT=$2
 else
     if [[ -d "${2}" ]]; then
-        OUTPUT=$2/${FULLNAME}.tar.xz
+        OUTPUT=$2/${PROJVERSION}.tar.xz
     else
         OUTPUT=${2-/root/${PROJVERSION}.tar.xz}
     fi
