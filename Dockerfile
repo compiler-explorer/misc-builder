@@ -6,6 +6,7 @@ RUN dpkg --add-architecture i386
 RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     apt install -y -q \
     bmake \
+    build-essential \
     cmake \
     curl \
     g++ \
@@ -23,7 +24,20 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     unzip \
     subversion \
     texinfo \
-    zlib1g-dev
+    zlib1g-dev \
+    clang \
+    llvm \
+    lldb \
+    gettext \
+    ninja-build \
+    libkrb5-dev \
+    libssl-dev \
+    libicu-dev \
+    liblttng-ust-dev \
+    libnuma-dev \
+    libunwind8 \
+    libunwind8-dev
+
 
 RUN cd /tmp && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
