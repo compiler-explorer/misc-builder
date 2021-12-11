@@ -6,7 +6,7 @@ VERSION=$1
 if echo ${VERSION} | grep 'trunk'; then
     BRANCH=main
 else
-    BRANCH=release/${VERSION}
+    BRANCH=${VERSION}
 fi
 
 URL=https://github.com/dotnet/runtime.git
