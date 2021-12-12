@@ -36,8 +36,14 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     liblttng-ust-dev \
     libnuma-dev \
     libunwind8 \
-    libunwind8-dev
+    libunwind8-dev \
+    language-pack-en-base \
+    language-pack-en
 
+RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment && \
+    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
+    echo "LANG=en_US.UTF-8" > /etc/locale.conf &&
+    locale-gen en_US.UTF-8
 
 RUN cd /tmp && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
