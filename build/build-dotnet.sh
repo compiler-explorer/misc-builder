@@ -43,7 +43,8 @@ cd ${DIR}
 
 ./build.sh clr -rc Checked --ninja
 
-XZ_OPT=-2 tar Jcf ${OUTPUT} .dotnet artifacts/bin/coreclr/Linux.x64.Checked
+mv .dotnet/ artifacts/bin/coreclr/Linux.x64.Checked/
+XZ_OPT=-2 tar Jcf ${OUTPUT} artifacts/bin/coreclr/Linux.x64.Checked
 
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
