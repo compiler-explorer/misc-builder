@@ -2,6 +2,7 @@
 
 set -ex
 
+ROOT=$(pwd)
 VERSION=$1
 if echo ${VERSION} | grep 'trunk'; then
     VERSION=trunk-$(date +%Y%m%d)
