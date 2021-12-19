@@ -8,7 +8,7 @@ if echo ${VERSION} | grep 'trunk'; then
     VERSION=trunk-$(date +%Y%m%d)
     BRANCH=master
 else
-    BRANCH=V${VERSION}
+    BRANCH=v${VERSION}
 fi
 
 URL=https://github.com/stardot/beebasm
