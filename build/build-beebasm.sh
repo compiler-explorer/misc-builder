@@ -26,7 +26,7 @@ else
     fi
 fi
 
-BEEBASM_REVISION=$(git ls-remote --heads ${URL} refs/heads/${BRANCH} | cut -f 1)
+BEEBASM_REVISION=$(git ls-remote --tags ${URL} refs/tags/${BRANCH} | cut -f 1)
 REVISION="beebasm-${BEEBASM_REVISION}"
 LAST_REVISION="${3}"
 
