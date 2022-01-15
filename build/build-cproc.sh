@@ -18,7 +18,8 @@ fi
 URL="https://github.com/michaelforney/cproc.git"
 BRANCH="master"
 
-FULLNAME=cproc-${VERSION}-$(date +%Y%m%d).tar.xz
+BASENAME=cproc-${VERSION}-$(date +%Y%m%d)
+FULLNAME=${BASENAME}.tar.xz
 OUTPUT=${ROOT}/${FULLNAME}
 S3OUTPUT=
 if [[ $2 =~ ^s3:// ]]; then
@@ -79,7 +80,7 @@ popd
 pushd root
 
 export XZ_DEFAULTS="-T 0"
-tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," ./
+tar Jcf "${OUTPUT}" --transform "s,^./,./${BASENAME}/," ./
 
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
