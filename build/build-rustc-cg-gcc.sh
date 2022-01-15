@@ -24,7 +24,8 @@ CG_GCC_URL="https://github.com/rust-lang/rustc_codegen_gcc.git"
 GCC_REVISION=$(git ls-remote --heads "${GCC_URL}" "refs/heads/${GCC_BRANCH}" | cut -f 1)
 CG_GCC_REVISION=$(git ls-remote --heads "${CG_GCC_URL}" "refs/heads/${CG_GCC_BRANCH}" | cut -f 1)
 
-FULLNAME=rustc-cg-gcc-${VERSION}-$(date +%Y%m%d).tar.xz
+BASENAME=rustc-cg-gcc-${VERSION}-$(date +%Y%m%d)
+FULLNAME=${BASENAME}.tar.xz
 OUTPUT=${ROOT}/${FULLNAME}
 S3OUTPUT=
 if [[ $2 =~ ^s3:// ]]; then
@@ -200,7 +201,7 @@ test test.s
 pushd toolroot
 
 export XZ_DEFAULTS="-T 0"
-tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," ./
+tar Jcf "${OUTPUT}" --transform "s,^./,./${BASENAME}/," ./
 
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
