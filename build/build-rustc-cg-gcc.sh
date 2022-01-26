@@ -72,14 +72,14 @@ git clone --depth 1 "${CG_GCC_URL}" --branch "${CG_GCC_BRANCH}"
 ## - the required build-deps from RUSTUP_COMP_BUILD_DEPS (-c *)
 ## - version taken from rust-toolchain file
 
-RUSTUP_COMP_BUILD_DEPS=(rust-src rustc-dev llvm-tools-preview)
+RUSTUP_COMP_BUILD_DEPS=( $(cat rustc_codegen_gcc/rust-toolchain | grep components | sed 's/components = \[\(.*\)\]/\1/' | tr -d '",' ) )
 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
     | sh -s -- --profile minimal \
          -c "$(printf '%s\n' "$(IFS=,; printf '%s' "${RUSTUP_COMP_BUILD_DEPS[*]}")")" \
          --no-modify-path \
          -y \
-         --default-toolchain  "$(cat rustc_codegen_gcc/rust-toolchain)"
+         --default-toolchain  "$(cat rustc_codegen_gcc/rust-toolchain | grep channel | sed 's/channel = "\(.*\)"/\1/')"
 
 source  "$PWD/rustup/env"
 
