@@ -41,10 +41,36 @@ DIR=$(pwd)/dotnet/runtime
 git clone --depth 1 -b ${BRANCH} ${URL} ${DIR}
 cd ${DIR}
 
-./build.sh clr -rc Checked --ninja
 
-mv .dotnet/ artifacts/bin/coreclr/Linux.x64.Checked/
-XZ_OPT=-2 tar Jcf ${OUTPUT} artifacts/bin/coreclr/Linux.x64.Checked
+CORE_ROOT=artifacts/tests/coreclr/Linux.x64.Release/Tests/Core_Root
+
+# Build everything in Release mode
+./build.sh Clr+Libs -c Release --ninja
+
+# Build Checked JIT compilers (only Checked JITs are able to print codegen)
+./build.sh Clr.Runtime -c Checked --ninja
+cd src/tests
+
+# Generate CORE_ROOT for Release
+./build.sh Release generatelayoutonly
+cd ../..
+
+# Copy Checked JITs to CORE_ROOT
+cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}/crossgen2
+
+# Pregenerate a simple console library project
+# Then we should be able to quickly re-build it with --no-restore
+cd ${CORE_ROOT}
+mkdir testapp
+cd testapp
+./dotnet.sh new classlib
+./dotnet.sh build -c Release -o out
+
+# Copy bootstrap .NET SDK, needed for 'dotnet build'
+cd ${DIR}
+mv .dotnet/ ${CORE_ROOT}/
+
+XZ_OPT=-2 tar Jcf ${OUTPUT} ${CORE_ROOT}
 
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
