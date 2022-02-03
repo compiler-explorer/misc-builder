@@ -48,7 +48,7 @@ CORE_ROOT=artifacts/tests/coreclr/Linux.x64.Release/Tests/Core_Root
 ./build.sh Clr+Libs -c Release --ninja
 
 # Build Checked JIT compilers (only Checked JITs are able to print codegen)
-./build.sh Clr.Runtime -c Checked --ninja
+./build.sh Clr.AllJits -c Checked --ninja
 cd src/tests
 
 # Generate CORE_ROOT for Release
