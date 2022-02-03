@@ -62,13 +62,13 @@ cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}/crossgen2
 # Then we should be able to quickly re-build it with --no-restore
 cd ${CORE_ROOT}
 
-./dotnet.sh new classlib -lang "C#" -o csapp
-./dotnet.sh new classlib -lang "F#" -o fsapp
-./dotnet.sh new classlib -lang "VB" -o vbapp
+${DIR}/./dotnet.sh new classlib -lang "C#" -o csapp
+${DIR}/./dotnet.sh new classlib -lang "F#" -o fsapp
+${DIR}/./dotnet.sh new classlib -lang "VB" -o vbapp
 
-./dotnet.sh build -c Release csapp -o csapp/out
-./dotnet.sh build -c Release fsapp -o fsapp/out
-./dotnet.sh build -c Release vbapp -o vbapp/out
+${DIR}/./dotnet.sh build -c Release csapp -o csapp/out
+${DIR}/./dotnet.sh build -c Release fsapp -o fsapp/out
+${DIR}/./dotnet.sh build -c Release vbapp -o vbapp/out
 
 # Copy bootstrap .NET SDK, needed for 'dotnet build'
 cd ${DIR}
