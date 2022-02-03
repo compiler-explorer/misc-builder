@@ -58,13 +58,17 @@ cd ../..
 # Copy Checked JITs to CORE_ROOT
 cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}/crossgen2
 
-# Pregenerate a simple console library project
+# Pregenerate a simple console library project per language
 # Then we should be able to quickly re-build it with --no-restore
 cd ${CORE_ROOT}
-mkdir testapp
-cd testapp
-./dotnet.sh new classlib
-./dotnet.sh build -c Release -o out
+
+./dotnet.sh new classlib -lang "C#" -o csapp
+./dotnet.sh new classlib -lang "F#" -o fsapp
+./dotnet.sh new classlib -lang "VB" -o vbapp
+
+./dotnet.sh build -c Release csapp -o csapp/out
+./dotnet.sh build -c Release fsapp -o fsapp/out
+./dotnet.sh build -c Release vbapp -o vbapp/out
 
 # Copy bootstrap .NET SDK, needed for 'dotnet build'
 cd ${DIR}
