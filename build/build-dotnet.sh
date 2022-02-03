@@ -70,6 +70,11 @@ ${DIR}/./dotnet.sh build -c Release csapp -o csapp/out
 ${DIR}/./dotnet.sh build -c Release fsapp -o fsapp/out
 ${DIR}/./dotnet.sh build -c Release vbapp -o vbapp/out
 
+# remove files we don't need in CORE_ROOT
+rm -rf *.pdb
+rm -rf *.so
+rm -rf *.so.dbg
+
 # Copy bootstrap .NET SDK, needed for 'dotnet build'
 cd ${DIR}
 mv .dotnet/ ${CORE_ROOT}/
