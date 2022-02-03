@@ -71,6 +71,8 @@ ${DIR}/./dotnet.sh build -c Release fsapp -o fsapp/out
 ${DIR}/./dotnet.sh build -c Release vbapp -o vbapp/out
 
 # remove files we don't need in CORE_ROOT
+# TODO: remove more stuff/libs nobody will ever use on godbolt
+# Also, from ".dotnet" bootstrap SDK like aspnet stuff, etc.
 rm -rf *.pdb
 rm -rf *.so
 rm -rf *.so.dbg
