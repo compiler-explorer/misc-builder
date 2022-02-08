@@ -19,13 +19,13 @@ URL="https://github.com/KhronosGroup/SPIRV-Tools.git"
 BRANCH="master"
 
 FULLNAME=SPIRV-Tools-${VERSION}-$(date +%Y%m%d)
-OUTPUT=${ROOT}/${FULLNAME}
+OUTPUT=${ROOT}/${FULLNAME}.tar.xz
 S3OUTPUT=
 if [[ $2 =~ ^s3:// ]]; then
     S3OUTPUT=$2
 else
     if [[ -d "${2}" ]]; then
-        OUTPUT=$2/${FULLNAME}
+        OUTPUT=$2/${FULLNAME}.tar.xz
     else
         OUTPUT=${2-$OUTPUT}
     fi
