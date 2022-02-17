@@ -67,7 +67,7 @@ ${DIR}/./dotnet.sh new classlib -lang "F#" -o fsapp
 ${DIR}/./dotnet.sh new classlib -lang "VB" -o vbapp
 
 # Ignore repo's rules and analyzers
-BUILD_TEMPLATES_FLAGS=-c Release /p:TreatWarningsAsErrors=false /p:RunAnalyzers=false
+BUILD_TEMPLATES_FLAGS="-c Release /p:TreatWarningsAsErrors=false /p:RunAnalyzers=false"
 
 ${DIR}/./dotnet.sh build ${BUILD_TEMPLATES_FLAGS} csapp -o csapp/out
 ${DIR}/./dotnet.sh build ${BUILD_TEMPLATES_FLAGS} fsapp -o fsapp/out
