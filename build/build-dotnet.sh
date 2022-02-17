@@ -66,9 +66,12 @@ ${DIR}/./dotnet.sh new classlib -lang "C#" -o csapp
 ${DIR}/./dotnet.sh new classlib -lang "F#" -o fsapp
 ${DIR}/./dotnet.sh new classlib -lang "VB" -o vbapp
 
-${DIR}/./dotnet.sh build -c Release csapp -o csapp/out
-${DIR}/./dotnet.sh build -c Release fsapp -o fsapp/out
-${DIR}/./dotnet.sh build -c Release vbapp -o vbapp/out
+# Ignore repo's rules and analyzers
+BUILD_TEMPLATES_FLAGS=-c Release /p:TreatWarningsAsErrors=false /p:RunAnalyzers=false
+
+${DIR}/./dotnet.sh build ${BUILD_TEMPLATES_FLAGS} csapp -o csapp/out
+${DIR}/./dotnet.sh build ${BUILD_TEMPLATES_FLAGS} fsapp -o fsapp/out
+${DIR}/./dotnet.sh build ${BUILD_TEMPLATES_FLAGS} vbapp -o vbapp/out
 
 # remove files we don't need in CORE_ROOT
 # TODO: remove more stuff/libs nobody will ever use on godbolt
