@@ -41,10 +41,47 @@ DIR=$(pwd)/dotnet/runtime
 git clone --depth 1 -b ${BRANCH} ${URL} ${DIR}
 cd ${DIR}
 
-./build.sh clr -rc Checked --ninja
 
-mv .dotnet/ artifacts/bin/coreclr/Linux.x64.Checked/
-XZ_OPT=-2 tar Jcf ${OUTPUT} artifacts/bin/coreclr/Linux.x64.Checked
+CORE_ROOT=artifacts/tests/coreclr/Linux.x64.Release/Tests/Core_Root
+
+# Build everything in Release mode
+./build.sh Clr+Libs -c Release --ninja
+
+# Build Checked JIT compilers (only Checked JITs are able to print codegen)
+./build.sh Clr.AllJits -c Checked --ninja
+cd src/tests
+
+# Generate CORE_ROOT for Release
+./build.sh Release generatelayoutonly
+cd ../..
+
+# Copy Checked JITs to CORE_ROOT
+cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}/crossgen2
+
+# Pregenerate a simple console library project per language
+# Then we should be able to quickly re-build it with --no-restore
+cd ${CORE_ROOT}
+
+${DIR}/./dotnet.sh new classlib -lang "C#" -o csapp
+${DIR}/./dotnet.sh new classlib -lang "F#" -o fsapp
+${DIR}/./dotnet.sh new classlib -lang "VB" -o vbapp
+
+${DIR}/./dotnet.sh build -c Release csapp -o csapp/out
+${DIR}/./dotnet.sh build -c Release fsapp -o fsapp/out
+${DIR}/./dotnet.sh build -c Release vbapp -o vbapp/out
+
+# remove files we don't need in CORE_ROOT
+# TODO: remove more stuff/libs nobody will ever use on godbolt
+# Also, from ".dotnet" bootstrap SDK like aspnet stuff, etc.
+rm -rf *.pdb
+rm -rf *.so
+rm -rf *.so.dbg
+
+# Copy bootstrap .NET SDK, needed for 'dotnet build'
+cd ${DIR}
+mv .dotnet/ ${CORE_ROOT}/
+
+XZ_OPT=-2 tar Jcf ${OUTPUT} ${CORE_ROOT}
 
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
