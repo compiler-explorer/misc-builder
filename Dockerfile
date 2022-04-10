@@ -31,6 +31,14 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     lldb \
     gettext \
     ninja-build \
+    file \
+    perl \
+    xxd \
+    mesa-common-dev \
+    zlib1g-dev \
+    libelf-dev \
+    libdrm-dev \
+    libudev-dev \
     libkrb5-dev \
     libssl-dev \
     libicu-dev \

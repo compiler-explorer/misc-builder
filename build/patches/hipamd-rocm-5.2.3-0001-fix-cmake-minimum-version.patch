@@ -1,0 +1,22 @@
+--- a/CMakeLists.txt    2022-05-23 22:01:05.000000000 -0600
++++ b/CMakeLists.txt    2022-07-09 14:24:16.519487276 -0600
+@@ -17,7 +17,7 @@
+ # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ # THE SOFTWARE.
+
+-cmake_minimum_required(VERSION 3.16.8)
++cmake_minimum_required(VERSION 3.16)
+ project(hip)
+
+ # sample command for hip-rocclr runtime, you'll need to have rocclr built
+--- a/hip-backward-compat.cmake 2022-07-09 23:37:37.819852741 -0600
++++ b/hip-backward-compat.cmake 2022-07-09 23:37:40.735938582 -0600
+@@ -17,7 +17,7 @@
+ # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ # THE SOFTWARE.
+
+-cmake_minimum_required(VERSION 3.16.8)
++cmake_minimum_required(VERSION 3.16)
+
+ set(HIP_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
+ set(HIP_WRAPPER_DIR ${HIP_BUILD_DIR}/wrapper_dir)
