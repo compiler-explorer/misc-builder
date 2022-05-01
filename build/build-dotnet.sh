@@ -3,6 +3,7 @@
 set -ex
 
 VERSION=$1
+SDK_VERSION=$2
 if echo ${VERSION} | grep 'trunk'; then
     BRANCH=main
 else
@@ -58,9 +59,16 @@ cd ../..
 cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}
 cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}/crossgen2
 
-# Copy bootstrap .NET SDK, needed for 'dotnet build'
+# Install .NET SDK, needed for 'dotnet build'
 cd ${DIR}
-mv .dotnet/ ${CORE_ROOT}/
+if [[ ! -z ${SDK_VERSION} ]]; then
+  # Download the specified version of .NET SDK
+  curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --version ${SDK_VERSION} --install-dir ${CORE_ROOT}/.dotnet
+else
+  # Use the runtime bootstrapping SDK
+  mv .dotnet/ ${CORE_ROOT}/
+fi
+
 
 XZ_OPT=-2 tar Jcf ${OUTPUT} ${CORE_ROOT}
 
