@@ -66,20 +66,25 @@ export PATH=$RUSTUP_HOME/bin:$PATH
 ## Download rustc_cg_gcc
 git clone --depth 1 "${CG_GCC_URL}" --branch "${CG_GCC_BRANCH}"
 
+pushd rustc_codegen_gcc
+git clone https://github.com/llvm/llvm-project llvm --depth 1 --single-branch
+export RUST_COMPILER_RT_ROOT="$PWD/llvm/compiler-rt"
+popd
+
 ## Download rustup and install it in a local dir
 ## Installs :
 ## - minimal profile
 ## - the required build-deps from RUSTUP_COMP_BUILD_DEPS (-c *)
 ## - version taken from rust-toolchain file
 
-RUSTUP_COMP_BUILD_DEPS=( $(cat rustc_codegen_gcc/rust-toolchain | grep components | sed 's/components = \[\(.*\)\]/\1/' | tr -d '",' ) )
+RUSTUP_COMP_BUILD_DEPS=( $(grep components rustc_codegen_gcc/rust-toolchain | sed 's/components = \[\(.*\)\]/\1/' | tr -d '",' ) )
 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
     | sh -s -- --profile minimal \
          -c "$(printf '%s\n' "$(IFS=,; printf '%s' "${RUSTUP_COMP_BUILD_DEPS[*]}")")" \
          --no-modify-path \
          -y \
-         --default-toolchain  "$(cat rustc_codegen_gcc/rust-toolchain | grep channel | sed 's/channel = "\(.*\)"/\1/')"
+         --default-toolchain  "$(grep channel rustc_codegen_gcc/rust-toolchain | sed 's/channel = "\(.*\)"/\1/')"
 
 source  "$PWD/rustup/env"
 
@@ -91,7 +96,6 @@ pushd rustc_codegen_gcc
 # where the libgccjit.so will be installed
 echo "$PREFIX/lib"  > gcc_path
 
-./build_sysroot/prepare_sysroot_src.sh
 popd
 
 ##
@@ -148,6 +152,7 @@ popd
 ## Back to rustc_cg_gcc for building
 ##
 pushd rustc_codegen_gcc
+./prepare_build.sh
 ./build.sh --release
 popd
 
