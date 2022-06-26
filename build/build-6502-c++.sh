@@ -55,8 +55,8 @@ make 6502-c++
 
 patchelf --set-rpath /opt/compiler-explorer/gcc-12.1.0/lib64 bin/6502-c++
 
-mkdir -p ${PREFIX}/6502-c++
-mv bin ${PREFIX}/6502-c++/bin
+mkdir -p ${PREFIX}
+mv bin ${PREFIX}/bin
 
 export XZ_DEFAULTS="-T 0"
 tar Jcf ${OUTPUT} --transform "s,^./,./6502-c++-${VERSION}/," -C ${PREFIX} .
