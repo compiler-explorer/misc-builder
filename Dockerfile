@@ -18,7 +18,9 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     libc6-dev:i386 \
     linux-libc-dev \
     make \
-    python3 \
+    python3.9 \
+    python3.9-venv \
+    python3-pip \
     s3cmd \
     xz-utils \
     unzip \
@@ -50,6 +52,19 @@ RUN cd /tmp && \
     unzip awscliv2.zip && \
     ./aws/install && \
     rm -rf aws*
+
+RUN apt install -y -q autotools-dev autoconf
+
+RUN apt install -y -q pkg-config libglib2.0-dev libpixman-1-dev libsdl-dev
+
+RUN pip3 install conan
+
+RUN mkdir -p /opt/compiler-explorer
+RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/infra
+RUN cd /opt/compiler-explorer/infra && make ce
+RUN /opt/compiler-explorer/infra/bin/ce_install install 'x86/gcc 12.1.0'
+
+RUN apt install -y -q patchelf
 
 RUN mkdir -p /root
 COPY build /root/
