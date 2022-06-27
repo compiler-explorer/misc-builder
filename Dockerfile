@@ -66,6 +66,8 @@ RUN /opt/compiler-explorer/infra/bin/ce_install install 'x86/gcc 12.1.0'
 
 RUN apt install -y -q patchelf
 
+RUN apt install -y -q libxml2-dev
+
 RUN mkdir -p /root
 COPY build /root/
 
