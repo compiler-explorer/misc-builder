@@ -40,6 +40,9 @@ fi
 
 PREFIX=$(pwd)/prefix
 DIR=$(pwd)/z88dk
+export BUILD_SDCC=1
+export BUILD_SDCC_HTTP=1 
+
 mkdir -p ${PREFIX}
 
 git clone --branch ${BRANCH} --depth 1 --recursive ${URL} ${DIR}
