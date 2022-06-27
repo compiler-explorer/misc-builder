@@ -47,6 +47,7 @@ git clone --branch ${BRANCH} --depth 1 --recursive ${URL} ${DIR}
 cd ${DIR}
 
 ./build.sh -i ${PREFIX}
+make install DESTDIR=${PREFIX}
 
 export XZ_DEFAULTS="-T 0"
 tar Jcf ${OUTPUT} --transform "s,^./,./z88dk-${VERSION}/," -C ${PREFIX} .
