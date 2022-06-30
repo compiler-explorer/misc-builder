@@ -49,6 +49,11 @@ git clone --branch ${BRANCH} --depth 1 --recursive ${URL} ${DIR}
 
 cd ${DIR}
 
+echo -e "[requires]\nboost/1.79.0\n[generators]\npkg_config\n" > ./conanfile.txt
+conan install .
+ls -l
+export PKG_CONFIG_PATH=/usr/lib/pkgconfig:${DIR}
+
 ./build.sh -i ${PREFIX}
 make install DESTDIR=${PREFIX}
 

@@ -68,6 +68,8 @@ RUN apt install -y -q patchelf
 
 RUN apt install -y -q libxml2-dev
 
+RUN apt install -y -q bison
+
 RUN mkdir -p /root
 COPY build /root/
 
