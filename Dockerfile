@@ -68,6 +68,9 @@ RUN apt install -y -q patchelf
 
 RUN apt install -y -q libxml2-dev
 
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+
 RUN mkdir -p /root
 COPY build /root/
 
