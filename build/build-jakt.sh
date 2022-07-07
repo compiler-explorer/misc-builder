@@ -64,8 +64,10 @@ cd "${SUBDIR}"
 cargo build --release
 cargo run --release -- selfhost/main.jakt
 
-mv target/release/jakt ./jakt-rs
-mv build/main ./jakt-selfhost
+mv target/release/jakt "${STAGING_DIR}/jakt-rs"
+mv build/main "${STAGING_DIR}/jakt-selfhost"
+mv .clang-format "${STAGING_DIR}/"
+mv runtime "${STAGING_DIR}/"
 
 export XZ_DEFAULTS="-T 0"
 tar Jcf "${OUTPUT}" --transform "s,^./,./${SUBDIR}/," -C "${STAGING_DIR}" .
