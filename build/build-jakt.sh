@@ -4,6 +4,9 @@
 ## $2 : destination: a directory or S3 path (eg. s3://...)
 ## $3 : last revision successfully build
 
+# Make sure cargo is in PATH
+export PATH="$PATH":"$HOME"/.cargo/bin
+
 set -ex
 ROOT=$(pwd)
 VERSION="$1"
