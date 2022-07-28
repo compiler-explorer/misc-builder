@@ -82,6 +82,8 @@ RUN apt install -y -q dos2unix
 
 RUN apt install -y -q ragel
 
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
 RUN mkdir -p /root
 COPY build /root/
 
