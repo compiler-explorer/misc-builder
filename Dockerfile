@@ -70,6 +70,18 @@ RUN apt install -y -q libxml2-dev
 
 RUN apt install -y -q bison
 
+RUN apt install -y -q re2c
+
+RUN apt install -y -q perl cpanminus
+
+RUN cpanm Modern::Perl
+
+RUN cpanm App::Prove CPU::Z80::Assembler Data::Dump File::Path List::Uniq Object::Tiny::RW Regexp::Common Text::Diff YAML::Tiny
+
+RUN apt install -y -q dos2unix
+
+RUN apt install -y -q ragel
+
 RUN mkdir -p /root
 COPY build /root/
 

@@ -53,6 +53,7 @@ echo -e "[requires]\nboost/1.79.0\n[generators]\npkg_config\n" > ./conanfile.txt
 conan install .
 ls -l
 export PKG_CONFIG_PATH=/usr/lib/pkgconfig:${DIR}
+export CXXFLAGS=$(pkg-config boost --cflags)
 
 ./build.sh -i ${PREFIX}
 make install DESTDIR=${PREFIX}
