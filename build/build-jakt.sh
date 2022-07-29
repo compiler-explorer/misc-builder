@@ -52,6 +52,8 @@ fi
 
 SUBDIR=jakt-${VERSION}
 STAGING_DIR=/opt/compiler-explorer/jakt-${VERSION}
+GXXPATH=/opt/compiler-explorer/gcc-12.1.0
+export PATH=${PATH}:/cmake/bin
 
 rm -rf "${STAGING_DIR}"
 mkdir -p "${STAGING_DIR}"
@@ -61,11 +63,9 @@ git clone -q --depth 1 --single-branch -b "${BRANCH}" "${URL}" "${SUBDIR}"
 
 cd "${SUBDIR}"
 
-cargo build --release
-cargo run --release -- selfhost/main.jakt
+CXX=${GXXPATH}/bin/g++ ninja
 
-mv target/release/jakt "${STAGING_DIR}/jakt-rs"
-mv build/main "${STAGING_DIR}/jakt-selfhost"
+mv build/jakt "${STAGING_DIR}/jakt-selfhost"
 mv .clang-format "${STAGING_DIR}/"
 mv runtime "${STAGING_DIR}/"
 

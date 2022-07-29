@@ -7,7 +7,6 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     apt install -y -q \
     bmake \
     build-essential \
-    cmake \
     curl \
     g++ \
     gcc \
@@ -40,7 +39,23 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     libunwind8 \
     libunwind8-dev \
     language-pack-en-base \
-    language-pack-en
+    language-pack-en \
+    autotools-dev \
+    autoconf \
+    ragel \
+    wget \
+    dos2unix \
+    pkg-config \
+    libglib2.0-dev \
+    libpixman-1-dev \
+    libsdl-dev \
+    patchelf \
+    libxml2-dev \
+    bison \
+    re2c \
+    perl \
+    cpanminus
+
 
 RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment && \
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
@@ -53,10 +68,6 @@ RUN cd /tmp && \
     ./aws/install && \
     rm -rf aws*
 
-RUN apt install -y -q autotools-dev autoconf
-
-RUN apt install -y -q pkg-config libglib2.0-dev libpixman-1-dev libsdl-dev
-
 RUN pip3 install conan
 
 RUN mkdir -p /opt/compiler-explorer
@@ -64,25 +75,19 @@ RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/
 RUN cd /opt/compiler-explorer/infra && make ce
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'x86/gcc 12.1.0'
 
-RUN apt install -y -q patchelf
-
-RUN apt install -y -q libxml2-dev
-
-RUN apt install -y -q bison
-
-RUN apt install -y -q re2c
-
-RUN apt install -y -q perl cpanminus
 
 RUN cpanm Modern::Perl
 
 RUN cpanm App::Prove CPU::Z80::Assembler Data::Dump File::Path List::Uniq Object::Tiny::RW Regexp::Common Text::Diff YAML::Tiny
 
-RUN apt install -y -q dos2unix
-
-RUN apt install -y -q ragel
-
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+RUN mkdir /cmake && \
+    cd /cmake && \
+    wget https://github.com/Kitware/CMake/releases/download/v3.24.0-rc5/cmake-3.24.0-rc5-linux-x86_64.sh && \
+    chmod +x cmake-3.24.0-rc5-linux-x86_64.sh && \
+    ./cmake-3.24.0-rc5-linux-x86_64.sh --skip-license && \
+    ls -l /cmake
 
 RUN mkdir -p /root
 COPY build /root/
