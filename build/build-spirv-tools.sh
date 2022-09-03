@@ -45,6 +45,8 @@ set -u
 
 OUTPUT=$(realpath "${OUTPUT}")
 
+export PATH=${PATH}:/cmake/bin
+
 git clone --depth 1 "${URL}" --branch "${BRANCH}"
 pushd SPIRV-Tools
 

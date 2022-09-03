@@ -13,3 +13,8 @@ Note: make sure you `chmod +x build/build-yourcompiler.sh` first
 sudo docker build -t miscbuilder .
 sudo docker run miscbuilder ./build-yourcompiler.sh trunk
 ```
+
+### Alternative to run (for better debugging)
+
+* `sudo docker run -t -i miscbuilder bash`
+* `./build-yourcompiler.sh trunk`
