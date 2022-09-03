@@ -53,17 +53,17 @@ git clone --depth 1 -b ${BRANCH} ${URL} ${DIR}
 
 export CLEANDATE="$(date +%Y-%m-%d)"
 
-PREFIX=/root/clean/build
+PREFIX=/root/clean/target/clean-classic
 cd ${DIR}
 
-./generic/cleanup.sh
-./generic/setup.sh clean-bundle-complete linux x64
-${STARTDIR}/custom-clean-fetch.sh clean-bundle-complete linux x64
-./generic/build.sh clean-bundle-complete linux x64
+# download and install Clean 3.1
+./clean-classic/linux-x64/setup.sh
+# download sources and build
+./clean-classic/linux-x64/build.sh
 
 export XZ_DEFAULTS="-T 0"
 
-tar Jcf ${OUTPUT} --transform "s,^./,./${PROJVERSION}/," -C ${PREFIX}/clean .
+tar Jcf ${OUTPUT} --transform "s,^./,./${PROJVERSION}/," -C ${PREFIX} .
 
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
