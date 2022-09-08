@@ -56,7 +56,7 @@ pushd clspv
 python3 utils/fetch_sources.py --shallow
 
 mkdir build
-cmake -S . -B build -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX:PATH="${STAGING_DIR}"
+cmake -S . -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH="${STAGING_DIR}"
 cmake --build build --parallel $(nproc)
 
 export XZ_DEFAULTS="-T 0"
