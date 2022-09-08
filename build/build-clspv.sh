@@ -41,10 +41,12 @@ else
 fi
 
 ## From now, no unset variable
-set -u
+# set -u
 
 OUTPUT=$(realpath "${OUTPUT}")
 STAGING_DIR=/opt/compiler-explorer/clspv-main
+
+echo "ce-build-output:${OUTPUT}"
 
 export PATH=${PATH}:/cmake/bin
 
@@ -66,4 +68,8 @@ if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
 fi
 
+echo "ce-build-status:OK"
+
 popd
+
+
