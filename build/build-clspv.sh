@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## $1 : version, clspv does not have any and only uses master branch.
+## $1 : version, clspv does not have any and only uses main branch.
 ## $2 : destination: a directory or S3 path (eg. s3://...)
 ## $3 : last revision successfully build
 
@@ -10,13 +10,13 @@ ROOT=$PWD
 VERSION="${1}"
 LAST_REVISION="${3}"
 
-if [[ "${VERSION}" != "master" ]]; then
-    echo "Only support building master"
+if [[ "${VERSION}" != "main" ]]; then
+    echo "Only support building main"
     exit 1
 fi
 
 URL="https://github.com/google/clspv.git"
-BRANCH="master"
+BRANCH="main"
 
 REVISION=$(git ls-remote --heads "${URL}" "refs/heads/${BRANCH}" | cut -f 1)
 echo "ce-build-revision:${REVISION}"
@@ -44,7 +44,7 @@ fi
 set -u
 
 OUTPUT=$(realpath "${OUTPUT}")
-STAGING_DIR=/opt/compiler-explorer/clspv-master
+STAGING_DIR=/opt/compiler-explorer/clspv-main
 
 mkdir -p "${STAGING_DIR}"
 
