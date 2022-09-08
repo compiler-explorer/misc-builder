@@ -46,6 +46,8 @@ set -u
 OUTPUT=$(realpath "${OUTPUT}")
 STAGING_DIR=/opt/compiler-explorer/clspv-main
 
+export PATH=${PATH}:/cmake/bin
+
 mkdir -p "${STAGING_DIR}"
 
 git clone --depth 1 "${URL}" --branch "${BRANCH}"
