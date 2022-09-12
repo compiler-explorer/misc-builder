@@ -191,6 +191,11 @@ mv ./rustc_codegen_gcc/target/release/librustc_codegen_gcc.so toolroot/lib
 mv ./rustc_codegen_gcc/build_sysroot/sysroot toolroot/
 
 ##
+## Fixup RPATH for the librustc_codegen_gcc.so so it can find libgccjit
+##
+patchelf --add-rpath '$ORIGIN/' toolroot/lib/librustc_codegen_gcc.so
+
+##
 ## Simple sanity checks:
 ## - check for assembly output
 ## - check for correct exec output
