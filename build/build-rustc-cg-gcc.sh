@@ -193,7 +193,9 @@ mv ./rustc_codegen_gcc/build_sysroot/sysroot toolroot/
 ##
 ## Fixup RPATH for the librustc_codegen_gcc.so so it can find libgccjit
 ##
-patchelf --add-rpath '$ORIGIN/' toolroot/lib/librustc_codegen_gcc.so
+## FIXME: when we bump the ubuntu image, patchelf will accept '--add-rpath'.
+## probably better if RPATH is used at some point by upstream.
+patchelf --set-rpath '$ORIGIN/' toolroot/lib/librustc_codegen_gcc.so
 
 ##
 ## Simple sanity checks:
