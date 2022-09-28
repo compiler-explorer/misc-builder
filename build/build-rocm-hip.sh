@@ -42,6 +42,7 @@ export PATH=${PATH}:/cmake/bin
 curl -sL https://github.com/RadeonOpenCompute/ROCm-CompilerSupport/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
 pushd ROCm-CompilerSupport-${ROCM_VERSION}
 cmake -Slib/comgr -Bbuild -DCMAKE_BUILD_TYPE=Release \
+  -GNinja \
   -DCMAKE_PREFIX_PATH="${COMP}" \
   -DCMAKE_INSTALL_PREFIX="${DEST}"
 ninja -C build
@@ -50,8 +51,9 @@ popd
 
 # roct-thunk-interface
 curl -sL https://github.com/RadeonOpenCompute/ROCT-Thunk-Interface/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-cd ROCT-Thunk-Interface-${ROCM_VERSION}
+pushd ROCT-Thunk-Interface-${ROCM_VERSION}
 cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
+  -GNinja \
   -DCMAKE_INSTALL_PREFIX="${DEST}"
 ninja -C build
 ninja -C build install
@@ -59,8 +61,9 @@ popd
 
 # rocr-runtime
 curl -sL https://github.com/RadeonOpenCompute/ROCR-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-cd ROCR-Runtime-${ROCM_VERSION}
+pushd ROCR-Runtime-${ROCM_VERSION}
 cmake -Ssrc -Bbuild \
+  -GNinja \
   -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
   -DCMAKE_INSTALL_PREFIX="${DEST}"
 ninja -C build
@@ -81,6 +84,7 @@ done
 mkdir build
 pushd build
 cmake -S.. -B. -DCMAKE_BUILD_TYPE=Release \
+  -GNinja \
   -DHIP_COMMON_DIR="${ROOT}/HIP-${ROCM_VERSION}" \
   -DAMD_OPENCL_PATH="${ROOT}/ROCm-OpenCL-Runtime-${ROCM_VERSION}" \
   -DROCCLR_PATH="${ROOT}/ROCclr-${ROCM_VERSION}" \
