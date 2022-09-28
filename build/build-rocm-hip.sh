@@ -68,11 +68,11 @@ ninja -C build install
 popd
 
 # hip
-curl -sL https://github.com/ROCm-Developer-Tools/hipamd/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+git clone --depth 1 https://github.com/ROCm-Developer-Tools/hipamd.git -b ${ROCM_VERSION}
 curl -sL https://github.com/ROCm-Developer-Tools/ROCclr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
 curl -sL https://github.com/RadeonOpenCompute/ROCm-OpenCL-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
 curl -sL https://github.com/ROCm-Developer-Tools/HIP/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-pushd hipamd-${ROCM_VERSION}
+pushd hipamd
 for PATCH_FILE in "${SCRIPT_DIR}"/patches/hipamd-${ROCM_VERSION}-*; do
   if [ -e "${PATCH_FILE}" ]; then
     patch -p1 < "${PATCH_FILE}"
@@ -89,7 +89,7 @@ cmake -S.. -B. -DCMAKE_BUILD_TYPE=Release \
 ninja
 ninja install
 popd # build
-popd # hipamd-${ROCM_VERSION}
+popd # hipamd
 
 export XZ_DEFAULTS="-T 0"
 tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," "${DEST}"
