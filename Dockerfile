@@ -82,6 +82,7 @@ RUN mkdir -p /opt/compiler-explorer
 RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/infra
 RUN cd /opt/compiler-explorer/infra && make ce
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'x86/gcc 12.1.0'
+RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.2.3'
 
 
 RUN cpanm Modern::Perl
