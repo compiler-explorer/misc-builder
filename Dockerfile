@@ -32,10 +32,8 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     gettext \
     ninja-build \
     file \
-    perl \
     xxd \
     mesa-common-dev \
-    zlib1g-dev \
     libelf-dev \
     libdrm-dev \
     libudev-dev \
