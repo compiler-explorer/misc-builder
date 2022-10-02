@@ -63,7 +63,7 @@ git clone -q --depth 1 --single-branch -b "${BRANCH}" "${URL}" "${SUBDIR}"
 
 cd "${SUBDIR}"
 
-CXX=${GXXPATH}/bin/g++ ninja
+CXX=${GXXPATH}/bin/g++ cmake -B build -GNinja
 
 mv build/jakt "${STAGING_DIR}/jakt-selfhost"
 mv .clang-format "${STAGING_DIR}/"
