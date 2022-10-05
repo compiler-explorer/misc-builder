@@ -96,7 +96,7 @@ popd # build
 popd # hipamd
 
 export XZ_DEFAULTS="-T 0"
-tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," "${DEST}"
+tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," -C "${DEST}" .
 
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
