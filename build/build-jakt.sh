@@ -68,8 +68,10 @@ cmake --build build
 
 cd build
 mv bin "${STAGING_DIR}/"
+mv lib "${STAGING_DIR}/"
 mv include "${STAGING_DIR}/"
-mv runtime "${STAGING_DIR}/"
+mv ../runtime "${STAGING_DIR}/"
+mv ../.clang-format "${STAGING_DIR}/"
 
 export XZ_DEFAULTS="-T 0"
 tar Jcf "${OUTPUT}" --transform "s,^./,./${SUBDIR}/," -C "${STAGING_DIR}" .
