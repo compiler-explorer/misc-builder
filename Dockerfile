@@ -84,6 +84,7 @@ RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 4.5.2'
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.0.2'
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.1.3'
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.2.3'
+RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.3.1'
 
 
 RUN cpanm Modern::Perl
