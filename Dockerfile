@@ -60,7 +60,8 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     bison \
     re2c \
     perl \
-    cpanminus
+    cpanminus \
+    openssh-client
 
 
 RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment && \
@@ -77,7 +78,13 @@ RUN cd /tmp && \
 RUN pip3 install conan
 
 RUN mkdir -p /opt/compiler-explorer
+
+# Add github public key to known_hosts, to enable interaction-less clone
+RUN mkdir /root/.ssh \
+    && touch /root/.ssh/known_hosts \
+    && ssh-keyscan github.com >> /root/.ssh/known_hosts
 RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/infra
+
 RUN cd /opt/compiler-explorer/infra && make ce
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'x86/gcc 12.1.0'
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 4.5.2'
