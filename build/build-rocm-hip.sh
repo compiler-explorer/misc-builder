@@ -89,7 +89,8 @@ cmake -S.. -B. -DCMAKE_BUILD_TYPE=Release \
   -DAMD_OPENCL_PATH="${ROOT}/ROCm-OpenCL-Runtime-${ROCM_VERSION}" \
   -DROCCLR_PATH="${ROOT}/ROCclr-${ROCM_VERSION}" \
   -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
-  -DCMAKE_INSTALL_PREFIX="${DEST}"
+  -DCMAKE_INSTALL_PREFIX="${DEST}" \
+  -DUSE_PROF_API=OFF
 ninja
 ninja install
 popd # build
