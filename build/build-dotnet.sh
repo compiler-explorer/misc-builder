@@ -41,7 +41,6 @@ DIR=$(pwd)/dotnet/runtime
 git clone --depth 1 -b ${BRANCH} ${URL} ${DIR}
 cd ${DIR}
 
-
 CORE_ROOT=artifacts/tests/coreclr/Linux.x64.Release/Tests/Core_Root
 
 # Build everything in Release mode
@@ -56,31 +55,10 @@ cd src/tests
 cd ../..
 
 # Copy Checked JITs to CORE_ROOT
+cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}
 cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}/crossgen2
 
-# Pregenerate a simple console library project per language
-# Then we should be able to quickly re-build it with --no-restore
-cd ${CORE_ROOT}
-
-${DIR}/./dotnet.sh new classlib -lang "C#" -o csapp
-${DIR}/./dotnet.sh new classlib -lang "F#" -o fsapp
-${DIR}/./dotnet.sh new classlib -lang "VB" -o vbapp
-
-# Ignore repo's rules and analyzers
-BUILD_TEMPLATES_FLAGS="-c Release /p:TreatWarningsAsErrors=false /p:RunAnalyzers=false"
-
-${DIR}/./dotnet.sh build ${BUILD_TEMPLATES_FLAGS} csapp -o csapp/out
-${DIR}/./dotnet.sh build ${BUILD_TEMPLATES_FLAGS} fsapp -o fsapp/out
-${DIR}/./dotnet.sh build ${BUILD_TEMPLATES_FLAGS} vbapp -o vbapp/out
-
-# remove files we don't need in CORE_ROOT
-# TODO: remove more stuff/libs nobody will ever use on godbolt
-# Also, from ".dotnet" bootstrap SDK like aspnet stuff, etc.
-rm -rf *.pdb
-rm -rf *.so
-rm -rf *.so.dbg
-
-# Copy bootstrap .NET SDK, needed for 'dotnet build'
+# Install .NET SDK, needed for 'dotnet build'
 cd ${DIR}
 mv .dotnet/ ${CORE_ROOT}/
 
