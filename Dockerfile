@@ -8,7 +8,6 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     bmake \
     build-essential \
     curl \
-    cmake \
     g++ \
     gcc \
     gcc-multilib \
@@ -105,8 +104,9 @@ RUN mkdir /cmake && \
     cd /cmake && \
     wget https://github.com/Kitware/CMake/releases/download/v3.24.0-rc5/cmake-3.24.0-rc5-linux-x86_64.sh && \
     chmod +x cmake-3.24.0-rc5-linux-x86_64.sh && \
-    ./cmake-3.24.0-rc5-linux-x86_64.sh --skip-license && \
-    ls -l /cmake
+    ./cmake-3.24.0-rc5-linux-x86_64.sh --skip-license
+
+ENV PATH=/cmake/bin:${PATH}
 
 RUN mkdir -p /root
 COPY build /root/
