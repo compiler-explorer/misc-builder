@@ -58,11 +58,11 @@ cd ../..
 cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}
 cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}/crossgen2
 
-# Install .NET SDK, needed for 'dotnet build'
+# Copy the bootstrapping .NET SDK, needed for 'dotnet build'
 cd ${DIR}
 mv .dotnet/ ${CORE_ROOT}/
-
-XZ_OPT=-2 tar Jcf ${OUTPUT} ${CORE_ROOT}
+cd ${CORE_ROOT}/..
+XZ_OPT=-2 tar Jcf ${OUTPUT} Core_Root
 
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
