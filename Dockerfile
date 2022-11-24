@@ -8,6 +8,7 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     bmake \
     build-essential \
     curl \
+    cmake \
     g++ \
     gcc \
     gcc-multilib \
