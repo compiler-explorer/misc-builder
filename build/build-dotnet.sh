@@ -59,10 +59,14 @@ cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}
 cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}/crossgen2
 
 # Copy the bootstrapping .NET SDK, needed for 'dotnet build'
+# Exclude the pdbs as when they are present, when running on Linux we get:
+# Error: Image is either too small or contains an invalid byte offset or count.
+# System.BadImageFormatException: Image is either too small or contains an invalid byte offset or count.
+
 cd ${DIR}
 mv .dotnet/ ${CORE_ROOT}/
 cd ${CORE_ROOT}/..
-XZ_OPT=-2 tar Jcf ${OUTPUT} Core_Root
+XZ_OPT=-2 tar Jcf ${OUTPUT} --exclude \*.pdb Core_Root
 
 if [[ -n "${S3OUTPUT}" ]]; then
     aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
