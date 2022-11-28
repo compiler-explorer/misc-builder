@@ -58,6 +58,9 @@ cd ../..
 cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}
 cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}/crossgen2
 
+# Copy global.json
+cp global.json ${CORE_ROOT}
+
 # Copy the bootstrapping .NET SDK, needed for 'dotnet build'
 # Exclude the pdbs as when they are present, when running on Linux we get:
 # Error: Image is either too small or contains an invalid byte offset or count.
