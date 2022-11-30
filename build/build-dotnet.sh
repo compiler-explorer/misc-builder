@@ -4,6 +4,7 @@ set -ex
 
 VERSION=$1
 if echo ${VERSION} | grep 'trunk'; then
+    VERSION=trunk-$(date +%Y%m%d)
     BRANCH=main
 else
     BRANCH=${VERSION}
