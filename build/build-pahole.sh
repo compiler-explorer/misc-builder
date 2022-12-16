@@ -71,9 +71,11 @@ git clone -q --depth 1 --recursive --single-branch -b "${BRANCH}" "${URL}" "${SU
 
 cd "${SUBDIR}"
 
-cmake -B build -GNinja -DCMAKE_INSTALL_PREFIX:PATH="${STAGING_DIR}" \
+cmake -B build -GNinja \
+    -DCMAKE_INSTALL_PREFIX:PATH="${STAGING_DIR}" \
+    -DCMAKE_INSTALL_RPATH:PATH="\$ORIGIN/../lib" \
+    -DCMAKE_PREFIX_PATH="${STAGING_DIR}" \
     -D__LIB=lib \
-    -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE \
     .
 cmake --build build --target install
 
