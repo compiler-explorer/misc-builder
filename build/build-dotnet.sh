@@ -42,10 +42,13 @@ DIR=$(pwd)/dotnet/runtime
 git clone --depth 1 -b ${BRANCH} ${URL} ${DIR}
 cd ${DIR}
 
+commit="$(git rev-parse HEAD)"
+echo "HEAD is at: $commit"
+
 CORE_ROOT=artifacts/tests/coreclr/Linux.x64.Release/Tests/Core_Root
 
 # Build everything in Release mode
-./build.sh Clr+Libs -c Release --ninja
+./build.sh Clr+Libs -c Release --ninja -ci -p:OfficialBuildId=$(date +%Y%m%d)-99
 
 # Build Checked JIT compilers (only Checked JITs are able to print codegen)
 ./build.sh Clr.AllJits -c Checked --ninja
@@ -54,6 +57,9 @@ cd src/tests
 # Generate CORE_ROOT for Release
 ./build.sh Release generatelayoutonly
 cd ../..
+
+# Write version info for .NET 6 (it doesn't have crossgen2 --version)
+echo "${VERSION:1}+${commit}" > ${CORE_ROOT}/version.txt
 
 # Copy Checked JITs to CORE_ROOT
 cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}
