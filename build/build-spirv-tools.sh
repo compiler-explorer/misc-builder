@@ -47,7 +47,7 @@ OUTPUT=$(realpath "${OUTPUT}")
 
 export PATH=${PATH}:/cmake/bin
 
-git clone --depth 1 "${URL}" --branch "${BRANCH}"
+git clone "${URL}" --branch "${BRANCH}"
 pushd SPIRV-Tools
 
 ./utils/git-sync-deps
