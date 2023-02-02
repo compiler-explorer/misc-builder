@@ -16,7 +16,7 @@ if [[ "${VERSION}" != "main" ]]; then
 fi
 
 URL="https://github.com/KhronosGroup/SPIRV-Tools.git"
-BRANCH="master"
+BRANCH="main"
 
 FULLNAME=SPIRV-Tools-${VERSION}-$(date +%Y%m%d)
 OUTPUT=${ROOT}/${FULLNAME}.tar.xz
