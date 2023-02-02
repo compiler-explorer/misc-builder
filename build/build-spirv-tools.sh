@@ -10,8 +10,8 @@ ROOT=$PWD
 VERSION="${1}"
 LAST_REVISION="${3}"
 
-if [[ "${VERSION}" != "master" ]]; then
-    echo "Only support building master"
+if [[ "${VERSION}" != "main" ]]; then
+    echo "Only support building main"
     exit 1
 fi
 
