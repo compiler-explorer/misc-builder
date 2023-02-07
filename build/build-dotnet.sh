@@ -4,7 +4,7 @@ set -ex
 
 VERSION=$1
 OS=linux
-if echo ${VERSION} | grep -q 'trunk'; then
+if echo "${VERSION}" | grep -q 'trunk'; then
     VERSION=trunk-$(date +%Y%m%d)
     BRANCH=main
 else
