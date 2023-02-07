@@ -3,11 +3,13 @@
 set -ex
 
 VERSION=$1
-if echo ${VERSION} | grep 'trunk'; then
+OS=linux
+if echo "${VERSION}" | grep -q 'trunk'; then
     VERSION=trunk-$(date +%Y%m%d)
     BRANCH=main
 else
-    BRANCH=${VERSION}
+    BRANCH="${VERSION}"
+    if [[ "${VERSION:1:1}" -lt 8 ]]; then OS=Linux; fi
 fi
 
 URL=https://github.com/dotnet/runtime.git
@@ -45,7 +47,7 @@ cd ${DIR}
 commit="$(git rev-parse HEAD)"
 echo "HEAD is at: $commit"
 
-CORE_ROOT=artifacts/tests/coreclr/Linux.x64.Release/Tests/Core_Root
+CORE_ROOT=artifacts/tests/coreclr/"${OS}".x64.Release/Tests/Core_Root
 
 # Build everything in Release mode
 ./build.sh Clr+Libs -c Release --ninja -ci -p:OfficialBuildId=$(date +%Y%m%d)-99
@@ -62,8 +64,8 @@ cd ../..
 echo "${VERSION:1}+${commit}" > ${CORE_ROOT}/version.txt
 
 # Copy Checked JITs to CORE_ROOT
-cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}
-cp artifacts/bin/coreclr/Linux.x64.Checked/libclrjit*.so ${CORE_ROOT}/crossgen2
+cp artifacts/bin/coreclr/"${OS}".x64.Checked/libclrjit*.so "${CORE_ROOT}"
+cp artifacts/bin/coreclr/"${OS}".x64.Checked/libclrjit*.so "${CORE_ROOT}"/crossgen2
 
 # Copy the bootstrapping .NET SDK, needed for 'dotnet build'
 # Exclude the pdbs as when they are present, when running on Linux we get:
