@@ -9,7 +9,7 @@ if echo ${VERSION} | grep -q 'trunk'; then
     BRANCH=main
 else
     BRANCH="${VERSION}"
-    if [[ "${VERSION:0:1}" -lt 8 ]]; then OS=Linux; fi
+    if [[ "${VERSION:1:1}" -lt 8 ]]; then OS=Linux; fi
 fi
 
 URL=https://github.com/dotnet/runtime.git
