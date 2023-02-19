@@ -153,7 +153,14 @@ popd
 ##
 pushd rustc_codegen_gcc
 ./prepare_build.sh
-./build.sh --release
+
+## Temporary fix, see
+## https://github.com/compiler-explorer/compiler-explorer/issues/4715. This
+## causes all the crates to be build with panic=abort, so any unwinding will be
+## doomed :(
+CG_RUSTFLAGS=-Cpanic=abort \
+    ./build.sh --release
+
 popd
 
 ##
