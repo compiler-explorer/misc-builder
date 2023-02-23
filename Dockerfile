@@ -62,6 +62,8 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     perl \
     cpanminus \
     openssh-client \ 
+    ocaml-nox \
+    libgmp-dev \
     opam
 
 
