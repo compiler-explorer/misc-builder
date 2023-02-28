@@ -96,6 +96,12 @@ RUN /opt/compiler-explorer/infra/bin/ce_install install 'x86/gcc 12.1.0'
 # RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.2.3'
 # RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.3.2'
 
+# Setup Opam
+RUN opam init --disable-sandboxing -n \
+    && opam install coq=8.15.2 --yes \
+    && opam install menhir --yes \
+    && eval `opam env`
+
 
 RUN cpanm Modern::Perl
 
