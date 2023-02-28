@@ -62,7 +62,8 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     perl \
     cpanminus \
     openssh-client \ 
-    ocaml-nox \
+    # used for CompCert Compilation
+    ocaml-nox \             
     libgmp-dev \
     opam
 
@@ -96,7 +97,7 @@ RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.1.3'
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.2.3'
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.3.2'
 
-# Setup Opam
+# Setup Opam and Install Coq and Menhir for CompCert
 RUN opam init --disable-sandboxing -n \
     && opam install coq=8.15.2 --yes \
     && opam install menhir --yes \
