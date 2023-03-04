@@ -10,7 +10,7 @@ set -ex
 ROOT=$PWD
 VERSION="${1}"
 ARCH="${2}"
-LAST_REVISION="${3-}"
+LAST_REVISION="${4-}"
 if [[ "${VERSION}" == "master" ]]; then
     VERSION=master-$(date +%Y%m%d)
     BRANCH=heads/master
