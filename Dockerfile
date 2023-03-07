@@ -61,7 +61,12 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     re2c \
     perl \
     cpanminus \
-    openssh-client
+    openssh-client \ 
+    # Begin list of requirements for CompCert
+    ocaml-nox \             
+    libgmp-dev \
+    opam
+    # End list of requirements for CompCert
 
 
 RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment && \
@@ -93,6 +98,15 @@ RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.1.3'
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.2.3'
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.3.2'
 
+# Setup for CompCert
+
+# Setup Opam and Install Coq and Menhir for CompCert
+RUN opam init --disable-sandboxing -n \
+    && opam install coq=8.15.2 --yes \
+    && opam install menhir --yes \
+    && eval `opam env`
+
+# End of setup for CompCert
 
 RUN cpanm Modern::Perl
 
