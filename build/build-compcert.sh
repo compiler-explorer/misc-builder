@@ -45,7 +45,9 @@ if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
     exit
 fi
 
-OPT=/opt/compiler-explorer
+# The path to compcert will be hardcoded in a config file (share/compcert.ini).
+# This makes the compiler not relocatable without editing this file beforehand.
+OPT=/opt/compiler-explorer/compcert
 STAGING_DIR=${OPT}/CompCert-${ARCH}-${VERSION}
 
 rm -rf "${STAGING_DIR}"
