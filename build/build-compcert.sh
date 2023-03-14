@@ -45,7 +45,8 @@ if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
     exit
 fi
 
-OPT=/opt/compiler-explorer
+# same way as in infra 
+OPT=/opt/compiler-explorer/compcert
 STAGING_DIR=${OPT}/CompCert-${ARCH}-${VERSION}
 
 rm -rf "${STAGING_DIR}"
