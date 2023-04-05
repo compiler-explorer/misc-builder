@@ -90,10 +90,10 @@ RUN mkdir /root/.ssh \
     && ssh-keyscan github.com >> /root/.ssh/known_hosts
 RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/infra
 
+RUN cd /opt/compiler-explorer/infra && make ce
+RUN /opt/compiler-explorer/infra/bin/ce_install install 'x86/gcc 12.1.0'
 ## """temp""" disable until this is split across several docker image.
 ## We are running out of space with all these getting installed.
-# RUN cd /opt/compiler-explorer/infra && make ce
-# RUN /opt/compiler-explorer/infra/bin/ce_install install 'x86/gcc 12.1.0'
 # RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 4.5.2'
 # RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.0.2'
 # RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang-rocm 5.1.3'
