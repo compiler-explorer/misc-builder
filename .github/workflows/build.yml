@@ -19,7 +19,7 @@ jobs:
       id: hub_build
       uses: docker/build-push-action@v4
       with:
-        push: github.ref == 'refs/heads/master'
+        push: ${{ github.ref == 'refs/heads/master' && 'true' || 'false' }}
         tags: compilerexplorer/${{ matrix.image }}-builder:latest
         cache-from: type=registry,ref=compilerexplorer/${{ matrix.image }}:latest
         cache-to: type=inline
