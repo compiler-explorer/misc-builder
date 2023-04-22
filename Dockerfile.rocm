@@ -1,0 +1,4 @@
+FROM ubuntu:20.04
+MAINTAINER Matt Godbolt <matt@godbolt.org>
+
+RUN echo hello world
