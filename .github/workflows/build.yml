@@ -22,7 +22,7 @@ jobs:
       with:
         push: ${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}
         tags: compilerexplorer/${{ matrix.image }}-builder:latest
-        cache-from: type=registry,ref=compilerexplorer/${{ matrix.image }}:latest
+        cache-from: type=registry,ref=compilerexplorer/${{ matrix.image }}-builder:latest
         cache-to: type=inline,mode=max
         file: Dockerfile.${{ matrix.image }}
     - name: Docker Hub Image Digest
