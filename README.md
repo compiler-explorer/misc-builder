@@ -5,16 +5,21 @@ the docker images used to build some of the more...esoteric...tools used on the 
 
 For example, it builds the 6502 compiler.
 
+It's in the process of being broken into smaller docker files, and/or separate repos as appropriate.
+What "as appropriate" means is stlil being workde on. Each dockerfile is for one group of related
+things, building a `XXX-builder` for the `Dockerfile.XXX` file. The `misc` Dockerfile itself is
+for the super misc-y things that really only are one-off, though that's still being split up.
+
 # Testing locally
 
 Note: make sure you `chmod +x build/build-yourcompiler.sh` first
 
 ```
-sudo docker build -t miscbuilder .
-sudo docker run miscbuilder ./build-yourcompiler.sh trunk
+docker build -t builder -f Dockerfile.misc .
+docker run --rm -v/tmp/out:/build builder ./build-yourcompiler.sh trunk /build
 ```
 
 ### Alternative to run (for better debugging)
 
-* `sudo docker run -t -i miscbuilder bash`
+* `docker run -t -i miscbuilder bash`
 * `./build-yourcompiler.sh trunk`
