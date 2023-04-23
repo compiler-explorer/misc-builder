@@ -4,6 +4,7 @@
 
 set -euo pipefail
 
+# get_remote_revision GITURL BRANCH
 get_remote_revision() {
     local URL="$1"
     local BRANCH="$2"
@@ -13,19 +14,29 @@ get_remote_revision() {
     echo "$REVISION"
 }
 
+# compress_output <source folder> <name to be extracted as> <dest tar.xz file>
 compress_output() {
     local SOURCE="$1"
     local FULLNAME="$2"
     local OUTPUT="$3"
 
-    env XZ_DEFAULTS="-T 0" tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," -C "${DEST}" .
+    env XZ_DEFAULTS="-T 0" tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," -C "${SOURCE}" .
 }
 
+# initialise REVISION OUTPUT_FILENAME
 initialise() {
-    local VERSION="$1"
+    local REVISION="$1"
     local OUTPUT="$2"
-    echo "ce-build-revision:${VERSION}"
+    echo "ce-build-revision:${REVISION}"
     echo "ce-build-output:${OUTPUT}"   
+}
+
+# skip_if_built REVISION PREV_REVISION
+skip_if_built() {
+    if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
+        echo "ce-build-status:SKIPPED"
+        exit
+    fi
 }
 
 complete_ok() {

@@ -6,12 +6,8 @@
 set -eu
 source common.sh
 
-ROOT=$PWD
 VERSION="${1}"
 ROCM_VERSION=rocm-${VERSION}
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 FULLNAME=hip-amd-${ROCM_VERSION}
 OUTPUT=$2/${FULLNAME}.tar.xz
 
