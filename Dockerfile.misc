@@ -44,12 +44,7 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     re2c \
     perl \
     cpanminus \
-    openssh-client \ 
-    # Begin list of requirements for CompCert
-    ocaml-nox \             
-    libgmp-dev \
-    opam
-    # End list of requirements for CompCert
+    openssh-client 
 
 RUN cd /tmp && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
@@ -69,16 +64,6 @@ RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/
 
 RUN cd /opt/compiler-explorer/infra && make ce
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'x86/gcc 12.1.0'
-
-# Setup for CompCert
-
-# Setup Opam and Install Coq and Menhir for CompCert
-RUN opam init --disable-sandboxing -n \
-    && opam install coq=8.15.2 --yes \
-    && opam install menhir --yes \
-    && eval `opam env`
-
-# End of setup for CompCert
 
 RUN cpanm Modern::Perl
 

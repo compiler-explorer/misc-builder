@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ['misc', 'rocm']
+        image: ['misc', 'rocm', 'compcert']
     steps:
     - name: Docker Setup Buildx
       uses: docker/setup-buildx-action@v2

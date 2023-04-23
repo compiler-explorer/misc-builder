@@ -1,0 +1,25 @@
+FROM ubuntu:20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
+    apt install -y -q \
+    build-essential \
+    curl \
+    git \
+    xz-utils \
+    perl \
+    cpanminus \
+    openssh-client \ 
+    ocaml-nox \             
+    libgmp-dev \
+    opam
+
+RUN opam init --disable-sandboxing -n \
+    && opam install coq=8.15.2 --yes \
+    && opam install menhir --yes \
+    && eval `opam env`
+
+RUN mkdir -p /root
+COPY compcert /root/
+
+WORKDIR /root

@@ -22,17 +22,7 @@ URL="https://github.com/AbsInt/CompCert.git"
 
 BASENAME=ccomp-${VERSION}-${ARCH}
 FULLNAME=${BASENAME}.tar.xz
-OUTPUT=${ROOT}/${FULLNAME}
-S3OUTPUT=
-if [[ "$3" =~ ^s3:// ]]; then
-    S3OUTPUT="$3"
-else
-    if [[ -d "${3}" ]]; then
-        OUTPUT=$3/${FULLNAME}
-    else
-        OUTPUT=${3-$OUTPUT}
-    fi
-fi
+OUTPUT=$3/${FULLNAME}
 
 REVISION=$(git ls-remote --tags --heads "${URL}" "refs/${BRANCH}" | cut -f 1)
 [[ -z "$REVISION" ]] && exit 255
@@ -59,15 +49,11 @@ git clone "${URL}" "compcert-${ARCH}-${VERSION}"
 cd "compcert-${ARCH}-${VERSION}"
 eval "$(opam env)"
 ./configure "${ARCH}-linux" -prefix "${STAGING_DIR}"
-make
+make "-j$(nproc)"
 make install
 
 export XZ_DEFAULTS="-T 0"
 tar Jcf "${OUTPUT}" --transform "s,^./,./CompCert-${ARCH}-${VERSION}/," -C "${STAGING_DIR}" .
-
-if [[ -n "${S3OUTPUT}" ]]; then
-    aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
-fi
 
 echo "ce-build-status:OK"
 
