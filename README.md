@@ -10,6 +10,8 @@ What "as appropriate" means is stlil being workde on. Each dockerfile is for one
 things, building a `XXX-builder` for the `Dockerfile.XXX` file. The `misc` Dockerfile itself is
 for the super misc-y things that really only are one-off, though that's still being split up.
 
+If you add a new Dockerfile, you'll need to edit the matrix in the `.github/workflows/build.yml` file.
+
 # Testing locally
 
 Note: make sure you `chmod +x build/build-yourcompiler.sh` first
