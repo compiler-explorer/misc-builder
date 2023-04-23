@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## $1 : version
-## $2 : destination: a directory or S3 path (eg. s3://...)
+## $2 : destination: a directory
 
 set -ex
 
@@ -12,31 +12,17 @@ ROCM_VERSION=rocm-${VERSION}
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 FULLNAME=hip-amd-${ROCM_VERSION}
-OUTPUT=${ROOT}/${FULLNAME}.tar.xz
-S3OUTPUT=
-if [[ $2 =~ ^s3:// ]]; then
-    S3OUTPUT=$2
-else
-    if [[ -d "${2}" ]]; then
-        OUTPUT=$2/${FULLNAME}.tar.xz
-    else
-        OUTPUT=${2-$OUTPUT}
-    fi
-fi
+OUTPUT=$2/${FULLNAME}.tar.xz
 
 echo "ce-build-revision:${VERSION}"
 echo "ce-build-output:${OUTPUT}"
 
-## From now, no unset variable
-set -u
-
 OUTPUT=$(realpath "${OUTPUT}")
 
 OPT=/opt/compiler-explorer
+${OPT}/infra/bin/ce_install install "clang-rocm ${VERSION}"
 COMP=${OPT}/clang-rocm-${VERSION}
 DEST=${OPT}/libs/rocm/${VERSION}
-
-export PATH=${PATH}:/cmake/bin
 
 # comgr
 curl -sL https://github.com/RadeonOpenCompute/ROCm-CompilerSupport/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
@@ -98,9 +84,5 @@ popd # hipamd
 
 export XZ_DEFAULTS="-T 0"
 tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," -C "${DEST}" .
-
-if [[ -n "${S3OUTPUT}" ]]; then
-    aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
-fi
 
 echo "ce-build-status:OK"

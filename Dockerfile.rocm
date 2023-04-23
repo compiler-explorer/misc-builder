@@ -1,0 +1,38 @@
+FROM ubuntu:20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q
+RUN apt install -y -q \
+    build-essential \
+    curl \
+    file \
+    git \
+    libdrm-dev \
+    libelf-dev \
+    libnuma-dev \
+    libudev-dev \
+    mesa-common-dev \
+    ninja-build \
+    openssh-client \
+    pkg-config \
+    python3.9 \
+    python3.9-venv \
+    xxd \
+    xz-utils \
+    zlib1g-dev
+
+# Add github public key to known_hosts, to enable interaction-less clone
+RUN mkdir /root/.ssh \
+    && touch /root/.ssh/known_hosts \
+    && ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/infra
+
+RUN curl -sL https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-linux-x86_64.tar.gz \
+    | tar zx -C /usr --strip-components=1
+
+RUN cd /opt/compiler-explorer/infra && make ce
+
+RUN mkdir -p /root
+COPY rocm /root/
+
+WORKDIR /root
