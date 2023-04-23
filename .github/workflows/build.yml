@@ -23,7 +23,7 @@ jobs:
         push: ${{ github.ref == 'refs/heads/master' && 'true' || 'false' }}
         tags: compilerexplorer/${{ matrix.image }}-builder:latest
         cache-from: type=registry,ref=compilerexplorer/${{ matrix.image }}:latest
-        cache-to: type=inline
+        cache-to: type=inline,mode=max
         file: Dockerfile.${{ matrix.image }}
     - name: Docker Hub Image Digest
       run: echo ${{ steps.hub_build.outputs.digest }}
