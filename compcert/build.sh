@@ -6,8 +6,8 @@
 ## $4 : Last revision successfully build (optional)
 
 set -exu
+source common.sh
 
-ROOT=$PWD
 VERSION="${1}"
 ARCH="${2}"
 LAST_REVISION="${4-}"
@@ -24,16 +24,10 @@ BASENAME=ccomp-${VERSION}-${ARCH}
 FULLNAME=${BASENAME}.tar.xz
 OUTPUT=$3/${FULLNAME}
 
-REVISION=$(git ls-remote --tags --heads "${URL}" "refs/${BRANCH}" | cut -f 1)
-[[ -z "$REVISION" ]] && exit 255
+REVISION=$(get_remote_revision "${URL}" "${BRANCH}")
+initialise "${REVISION}" "${OUTPUT}"
 
-echo "ce-build-revision:${REVISION}"
-echo "ce-build-output:${OUTPUT}"
-
-if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
-    echo "ce-build-status:SKIPPED"
-    exit
-fi
+skip_if_built "${REVISION}" "${LAST_REVISION}"
 
 # The path to compcert will be hardcoded in a config file (share/compcert.ini).
 # This makes the compiler not relocatable without editing this file beforehand.
@@ -52,9 +46,4 @@ eval "$(opam env)"
 make "-j$(nproc)"
 make install
 
-export XZ_DEFAULTS="-T 0"
-tar Jcf "${OUTPUT}" --transform "s,^./,./CompCert-${ARCH}-${VERSION}/," -C "${STAGING_DIR}" .
-
-echo "ce-build-status:OK"
-
-
+complete "${DEST}" "${FULLNAME}" "${OUTPUT}"

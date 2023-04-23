@@ -34,5 +34,6 @@ RUN cd /opt/compiler-explorer/infra && make ce
 
 RUN mkdir -p /root
 COPY rocm /root/
+COPY common.sh /root/common.sh
 
 WORKDIR /root

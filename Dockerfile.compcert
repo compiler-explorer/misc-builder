@@ -21,5 +21,6 @@ RUN opam init --disable-sandboxing -n \
 
 RUN mkdir -p /root
 COPY compcert /root/
+COPY common.sh /root/
 
 WORKDIR /root

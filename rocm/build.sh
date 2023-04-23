@@ -3,19 +3,15 @@
 ## $1 : version
 ## $2 : destination: a directory
 
-set -ex
+set -eu
+source common.sh
 
-ROOT=$PWD
 VERSION="${1}"
 ROCM_VERSION=rocm-${VERSION}
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 FULLNAME=hip-amd-${ROCM_VERSION}
 OUTPUT=$2/${FULLNAME}.tar.xz
 
-echo "ce-build-revision:${VERSION}"
-echo "ce-build-output:${OUTPUT}"
+initialise "${VERSION}" "${OUTPUT}"
 
 OUTPUT=$(realpath "${OUTPUT}")
 
@@ -82,7 +78,4 @@ ninja install
 popd # build
 popd # hipamd
 
-export XZ_DEFAULTS="-T 0"
-tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," -C "${DEST}" .
-
-echo "ce-build-status:OK"
+complete "${DEST}" "${FULLNAME}" "${OUTPUT}"
