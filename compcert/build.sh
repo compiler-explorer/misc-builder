@@ -25,9 +25,7 @@ FULLNAME=${BASENAME}.tar.xz
 OUTPUT=$3/${FULLNAME}
 
 REVISION=$(get_remote_revision "${URL}" "${BRANCH}")
-initialise "${REVISION}" "${OUTPUT}"
-
-skip_if_built "${REVISION}" "${LAST_REVISION}"
+initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
 # The path to compcert will be hardcoded in a config file (share/compcert.ini).
 # This makes the compiler not relocatable without editing this file beforehand.

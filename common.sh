@@ -2,7 +2,7 @@
 
 # Common utilities and setup for builds
 
-set -euo pipefail
+set -euxo pipefail
 
 # get_remote_revision GITURL BRANCH
 get_remote_revision() {
@@ -14,22 +14,18 @@ get_remote_revision() {
     echo "$REVISION"
 }
 
-# initialise REVISION OUTPUT_FILENAME
+# initialise REVISION OUTPUT_FILENAME [optional previously built revision]
 initialise() {
     local REVISION="$1"
     local OUTPUT="$2"
+    local LAST_REVISION="${3-previously-unbuilt}"
     echo "ce-build-revision:${REVISION}"
     echo "ce-build-output:${OUTPUT}"   
-}
-
-# skip_if_built REVISION PREV_REVISION
-skip_if_built() {
     if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
         echo "ce-build-status:SKIPPED"
         exit
     fi
 }
-
 
 # complete <source folder> <name to be extracted as> <dest tar.xz file>
 complete() {

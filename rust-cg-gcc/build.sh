@@ -4,9 +4,9 @@
 ## $2 : destination: a directory or S3 path (eg. s3://...)
 ## $3 : last revision (as mangled below) successfully build (optional)
 
-set -e
+set -eu
+source common.sh
 
-ROOT=$PWD
 VERSION="${1}"
 LAST_REVISION="${3-}"
 
@@ -21,34 +21,15 @@ GCC_BRANCH="master"
 CG_GCC_BRANCH="master"
 CG_GCC_URL="https://github.com/rust-lang/rustc_codegen_gcc.git"
 
-GCC_REVISION=$(git ls-remote --heads "${GCC_URL}" "refs/heads/${GCC_BRANCH}" | cut -f 1)
-CG_GCC_REVISION=$(git ls-remote --heads "${CG_GCC_URL}" "refs/heads/${CG_GCC_BRANCH}" | cut -f 1)
+GCC_REVISION=$(get_remote_revision "${GCC_URL}" "heads/${GCC_BRANCH}")
+CG_GCC_REVISION=$(get_remote_revision "${CG_GCC_URL}" "heads/${CG_GCC_BRANCH}")
 
 BASENAME=rustc-cg-gcc-${VERSION}-$(date +%Y%m%d)
 FULLNAME=${BASENAME}.tar.xz
-OUTPUT=${ROOT}/${FULLNAME}
-S3OUTPUT=
-if [[ $2 =~ ^s3:// ]]; then
-    S3OUTPUT=$2
-else
-    if [[ -d "${2}" ]]; then
-        OUTPUT=$2/${FULLNAME}
-    else
-        OUTPUT=${2-$OUTPUT}
-    fi
-fi
+OUTPUT=$2/${FULLNAME}
 
 REVISION="cggcc-${CG_GCC_REVISION}-gcc-${GCC_REVISION}"
-echo "ce-build-revision:${REVISION}"
-echo "ce-build-output:${OUTPUT}"
-
-if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
-    echo "ce-build-status:SKIPPED"
-    exit
-fi
-
-## From now, no unset variable
-set -u
+initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
 OUTPUT=$(realpath "${OUTPUT}")
 
@@ -156,7 +137,7 @@ pushd rustc_codegen_gcc
 
 ## Temporary fix, see
 ## https://github.com/compiler-explorer/compiler-explorer/issues/4715. This
-## causes all the crates to be build with panic=abort, so any unwinding will be
+## causes all the crates to be built with panic=abort, so any unwinding will be
 ## doomed :(
 CG_RUSTFLAGS=-Cpanic=abort \
     ./build.sh --release
@@ -164,7 +145,7 @@ CG_RUSTFLAGS=-Cpanic=abort \
 popd
 
 ##
-## Everything should be correctly build
+## Everything should be correctly built
 ##
 
 ##
@@ -217,13 +198,4 @@ test test.s
 ./test
 
 # Don't try to compress the binaries as they don't like it
-pushd toolroot
-
-export XZ_DEFAULTS="-T 0"
-tar Jcf "${OUTPUT}" --transform "s,^./,./${BASENAME}/," ./
-
-if [[ -n "${S3OUTPUT}" ]]; then
-    aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
-fi
-
-echo "ce-build-status:OK"
+complete toolroot "${BASENAME}" "${OUTPUT}"

@@ -69,8 +69,6 @@ RUN cpanm Modern::Perl
 
 RUN cpanm App::Prove CPU::Z80::Assembler Data::Dump File::Path List::Uniq Object::Tiny::RW Regexp::Common Text::Diff YAML::Tiny
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
 RUN mkdir /cmake && \
     cd /cmake && \
     wget https://github.com/Kitware/CMake/releases/download/v3.24.0-rc5/cmake-3.24.0-rc5-linux-x86_64.sh && \
