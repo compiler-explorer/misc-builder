@@ -78,5 +78,4 @@ ninja install
 popd # build
 popd # hipamd
 
-compress_output "${DEST}" "${FULLNAME}" "${OUTPUT}"
-complete_ok
+complete "${DEST}" "${FULLNAME}" "${OUTPUT}"

@@ -46,6 +46,4 @@ eval "$(opam env)"
 make "-j$(nproc)"
 make install
 
-compress_output "${STAGING_DIR}" "${ARCH}-${VERSION}" "${OUTPUT}"
-complete_ok
-
+complete "${DEST}" "${FULLNAME}" "${OUTPUT}"

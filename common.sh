@@ -14,15 +14,6 @@ get_remote_revision() {
     echo "$REVISION"
 }
 
-# compress_output <source folder> <name to be extracted as> <dest tar.xz file>
-compress_output() {
-    local SOURCE="$1"
-    local FULLNAME="$2"
-    local OUTPUT="$3"
-
-    env XZ_DEFAULTS="-T 0" tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," -C "${SOURCE}" .
-}
-
 # initialise REVISION OUTPUT_FILENAME
 initialise() {
     local REVISION="$1"
@@ -39,6 +30,13 @@ skip_if_built() {
     fi
 }
 
-complete_ok() {
+
+# complete <source folder> <name to be extracted as> <dest tar.xz file>
+complete() {
+    local SOURCE="$1"
+    local FULLNAME="$2"
+    local OUTPUT="$3"
+
+    env XZ_DEFAULTS="-T 0" tar Jcf "${OUTPUT}" --transform "s,^./,./${FULLNAME}/," -C "${SOURCE}" .
     echo "ce-build-status:OK"
 }
