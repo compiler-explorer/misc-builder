@@ -1,8 +1,8 @@
 #!/bin/bash
 
 set -ex
+source common.sh
 
-ROOT=$(pwd)
 VERSION=$1
 if echo ${VERSION} | grep 'trunk'; then
     VERSION=trunk-$(date +%Y%m%d)
@@ -14,29 +14,15 @@ fi
 URL=https://github.com/z88dk/z88dk.git
 
 FULLNAME=z88dk-${VERSION}.tar.xz
-OUTPUT=${ROOT}/${FULLNAME}
-S3OUTPUT=
-if [[ $2 =~ ^s3:// ]]; then
-    S3OUTPUT=$2
-else
-    if [[ -d "${2}" ]]; then
-        OUTPUT=$2/${FULLNAME}
-    else
-        OUTPUT=${2-$OUTPUT}
-    fi
-fi
+OUTPUT=$2/${FULLNAME}
 
-GIT_REVISION=$(git ls-remote --heads ${URL} refs/heads/${BRANCH} | cut -f 1)
+GIT_REVISION=$(get_remote_revision "${URL}" "heads/${BRANCH}")
 REVISION="z88dk-${GIT_REVISION}"
-LAST_REVISION="${3}"
+LAST_REVISION="${3:-}"
 
-echo "ce-build-revision:${REVISION}"
-echo "ce-build-output:${OUTPUT}"
+initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
-if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
-    echo "ce-build-status:SKIPPED"
-    exit
-fi
+pip3 install conan==1.59.0
 
 PREFIX=$(pwd)/prefix
 DIR=$(pwd)/z88dk
@@ -58,11 +44,4 @@ export CXXFLAGS=$(pkg-config boost --cflags)
 ./build.sh -i ${PREFIX}
 make install DESTDIR=${PREFIX}
 
-export XZ_DEFAULTS="-T 0"
-tar Jcf ${OUTPUT} --transform "s,^./,./z88dk-${VERSION}/," -C ${PREFIX} .
-
-if [[ -n "${S3OUTPUT}" ]]; then
-    aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
-fi
-
-echo "ce-build-status:OK"
+complete "${PREFIX}" "${FULLNAME}" "${OUTPUT}"

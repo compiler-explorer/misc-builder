@@ -10,7 +10,10 @@ get_remote_revision() {
     local BRANCH="$2"
     local REVISION
     REVISION=$(git ls-remote --tags --heads "${URL}" "refs/${BRANCH}" | cut -f 1)
-    [[ -z "$REVISION" ]] && exit 255
+    if [[ -z "$REVISION" ]]; then
+        >&2 echo "Unable to get remote revision for ${URL} refs/${BRANCH}"
+        exit 255
+    fi
     echo "$REVISION"
 }
 

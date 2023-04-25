@@ -52,8 +52,6 @@ RUN cd /tmp && \
     ./aws/install && \
     rm -rf aws*
 
-RUN pip3 install conan
-
 RUN mkdir -p /opt/compiler-explorer
 
 # Add github public key to known_hosts, to enable interaction-less clone
@@ -79,5 +77,6 @@ ENV PATH=/cmake/bin:${PATH}
 
 RUN mkdir -p /root
 COPY misc /root/
+COPY common.sh /root/
 
 WORKDIR /root

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## $1 : version, currently rustc_cg_gcc does not have any and only uses master branch.
-## $2 : destination: a directory or S3 path (eg. s3://...)
+## $2 : destination: a directory
 ## $3 : last revision (as mangled below) successfully build (optional)
 
 set -eu
