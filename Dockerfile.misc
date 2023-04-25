@@ -67,13 +67,8 @@ RUN cpanm Modern::Perl
 
 RUN cpanm App::Prove CPU::Z80::Assembler Data::Dump File::Path List::Uniq Object::Tiny::RW Regexp::Common Text::Diff YAML::Tiny
 
-RUN mkdir /cmake && \
-    cd /cmake && \
-    wget https://github.com/Kitware/CMake/releases/download/v3.24.0-rc5/cmake-3.24.0-rc5-linux-x86_64.sh && \
-    chmod +x cmake-3.24.0-rc5-linux-x86_64.sh && \
-    ./cmake-3.24.0-rc5-linux-x86_64.sh --skip-license
-
-ENV PATH=/cmake/bin:${PATH}
+RUN curl -sL https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-linux-x86_64.tar.gz \
+    | tar zx -C /usr --strip-components=1
 
 RUN mkdir -p /root
 COPY misc /root/
