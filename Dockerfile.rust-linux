@@ -58,7 +58,6 @@ RUN apt install -y -q --no-install-recommends \
     llvm \
     lzop \
     make \
-    make \
     opensbi \
     python3 \
     qemu-system-arm \
