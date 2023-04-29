@@ -1,0 +1,87 @@
+FROM ubuntu:22.04 AS builder
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q
+RUN apt-get -y --no-install-recommends install \
+    build-essential \
+    ca-certificates \
+    gcc \
+    gcc-aarch64-linux-gnu   \
+    gcc-arm-linux-gnueabi  \
+    gcc-powerpc64le-linux-gnu \
+    gcc-riscv64-linux-gnu     \
+    git \
+    libc6-dev \
+    libc6-dev-arm64-cross \
+    libc6-dev-armel-cross \
+    libc6-dev-ppc64el-cross \
+    libc6-dev-riscv64-cross \
+    make
+COPY rust-linux/busybox.config .
+RUN git clone --depth 1 -b 1_30_1 https://git.busybox.net/busybox/ \
+    && mv busybox.config busybox/.config \
+    && cd busybox \
+    && make                                      -j$(nproc) busybox && mv busybox ../busybox-x86_64 \
+    && make CROSS_COMPILE=arm-linux-gnueabi-     -j$(nproc) busybox && mv busybox ../busybox-arm \
+    && make CROSS_COMPILE=aarch64-linux-gnu-     -j$(nproc) busybox && mv busybox ../busybox-arm64 \
+    && make CROSS_COMPILE=powerpc64le-linux-gnu- -j$(nproc) busybox && mv busybox ../busybox-ppc64le \
+    && make CROSS_COMPILE=riscv64-linux-gnu-     -j$(nproc) busybox && mv busybox ../busybox-riscv64
+
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q
+RUN apt install -y -q --no-install-recommends \
+    bc \
+    bison \
+    build-essential \
+    ca-certificates \
+    ccache \
+    clang \
+    curl \
+    file \
+    flex \
+    gcc \
+    gcc-aarch64-linux-gnu \
+    gcc-arm-linux-gnueabi \
+    gcc-powerpc64le-linux-gnu \
+    gcc-riscv64-linux-gnu \
+    git \
+    libc6-dev \
+    libc6-dev-arm64-cross \
+    libc6-dev-armel-cross \
+    libc6-dev-ppc64el-cross \
+    libc6-dev-riscv64-cross \
+    libelf-dev \
+    libssl-dev \
+    lld \
+    llvm \
+    lzop \
+    make \
+    make \
+    opensbi \
+    python3 \
+    qemu-system-arm \
+    qemu-system-ppc \
+    qemu-system-riscv64 \
+    qemu-system-x86 \
+    xz-utils \
+    && rm -r /var/lib/apt/lists/*
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
+    --no-modify-path \
+    --default-toolchain 1.66.0 \
+    --profile minimal \
+    --component rust-src \
+    --component rustfmt \
+    --component clippy
+
+RUN $HOME/.cargo/bin/cargo install --locked --version 0.56.0 bindgen \
+    && rm -r $HOME/.cargo/registry
+
+RUN mkdir -p /root
+COPY rust-linux /root/
+COPY common.sh /root/common.sh
+COPY --from=builder busybox-* /root/
+
+WORKDIR /root
