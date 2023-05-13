@@ -5,77 +5,50 @@
 
 set -eu
 source common.sh
+source $HOME/.cargo/env
 
 VERSION="${1}"
-ROCM_VERSION=rocm-${VERSION}
-FULLNAME=hip-amd-${ROCM_VERSION}
-OUTPUT=$2/${FULLNAME}.tar.xz
+LAST_REVISION="${3-}"
 
-initialise "${VERSION}" "${OUTPUT}"
+URL="https://github.com/torvalds/linux.git"
+if [ "${VERSION}" -eq "trunk" ]; then
+  VERSION=trunk-$(date +%Y%m%d)
+  BRANCH=master
+  REMOTE=heads/master
+else
+  BRANCH=v"${VERSION}"
+  REMOTE=tags/${BRANCH}
+fi
+
+FULLNAME=rust-linux-${VERSION}
+OUTPUT=$2/${FULLNAME}.tar.xz
+REVISION=$(get_remote_revision "${URL}" "${REMOTE}")
+
+initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
 OUTPUT=$(realpath "${OUTPUT}")
 
-OPT=/opt/compiler-explorer
-${OPT}/infra/bin/ce_install install "clang-rocm ${VERSION}"
-COMP=${OPT}/clang-rocm-${VERSION}
-DEST=${OPT}/libs/rocm/${VERSION}
+# we assume we don't need to patch the kernel (ie we fix the RUSTC_BOOTSTRAP=1 issue)
+BUILD_DEST=/opt/compiler-explorer/linux-rust/${VERSION}  # Currently needs to be same as the ultimate destination
+mkdir -p "$(dirname "${BUILD_DEST}")"
+git clone "${URL}" --depth=1 "--branch=${BRANCH}" "${BUILD_DEST}"
 
-# comgr
-curl -sL https://github.com/RadeonOpenCompute/ROCm-CompilerSupport/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-pushd ROCm-CompilerSupport-${ROCM_VERSION}
-cmake -Slib/comgr -Bbuild -DCMAKE_BUILD_TYPE=Release \
-  -GNinja \
-  -DCMAKE_PREFIX_PATH="${COMP}" \
-  -DCMAKE_INSTALL_PREFIX="${DEST}"
-ninja -C build
-ninja -C build install
+pushd "${BUILD_DEST}"
+
+rustup default "$(scripts/min-tool-version.sh rustc)"
+rustup component add rust-src
+$HOME/.cargo/bin/cargo install --locked --version "$(scripts/min-tool-version.sh bindgen)" bindgen
+
+make --jobs="$(nproc)" ARCH-x86_64 LLVM=1 defconfig rust.config prepare
+
+DEST=/root/linux-out
+mkdir "${DEST}"
+cp --parents \
+      ./rust/*.rmeta \
+      ./rust/*.so \
+      ./include/generated/rustc_cfg \
+      ./scripts/target.json \
+      "${DEST}"
 popd
-
-# roct-thunk-interface
-curl -sL https://github.com/RadeonOpenCompute/ROCT-Thunk-Interface/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-pushd ROCT-Thunk-Interface-${ROCM_VERSION}
-cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
-  -GNinja \
-  -DCMAKE_INSTALL_PREFIX="${DEST}"
-ninja -C build
-ninja -C build install
-popd
-
-# rocr-runtime
-curl -sL https://github.com/RadeonOpenCompute/ROCR-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-pushd ROCR-Runtime-${ROCM_VERSION}
-cmake -Ssrc -Bbuild \
-  -GNinja \
-  -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
-  -DCMAKE_INSTALL_PREFIX="${DEST}"
-ninja -C build
-ninja -C build install
-popd
-
-# hip
-git clone --depth 1 https://github.com/ROCm-Developer-Tools/hipamd.git -b ${ROCM_VERSION}
-curl -sL https://github.com/ROCm-Developer-Tools/ROCclr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-curl -sL https://github.com/RadeonOpenCompute/ROCm-OpenCL-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-curl -sL https://github.com/ROCm-Developer-Tools/HIP/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-pushd hipamd
-for PATCH_FILE in "${SCRIPT_DIR}"/patches/hipamd-${ROCM_VERSION}-*; do
-  if [ -e "${PATCH_FILE}" ]; then
-    patch -p1 < "${PATCH_FILE}"
-  fi
-done
-mkdir build
-pushd build
-cmake -S.. -B. -DCMAKE_BUILD_TYPE=Release \
-  -GNinja \
-  -DHIP_COMMON_DIR="${ROOT}/HIP-${ROCM_VERSION}" \
-  -DAMD_OPENCL_PATH="${ROOT}/ROCm-OpenCL-Runtime-${ROCM_VERSION}" \
-  -DROCCLR_PATH="${ROOT}/ROCclr-${ROCM_VERSION}" \
-  -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
-  -DCMAKE_INSTALL_PREFIX="${DEST}" \
-  -DUSE_PROF_API=OFF
-ninja
-ninja install
-popd # build
-popd # hipamd
 
 complete "${DEST}" "${FULLNAME}" "${OUTPUT}"
