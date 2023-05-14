@@ -11,7 +11,7 @@ VERSION="${1}"
 LAST_REVISION="${3-}"
 
 URL="https://github.com/torvalds/linux.git"
-if [ "${VERSION}" -eq "trunk" ]; then
+if [[ "${VERSION}" == trunk ]]; then
   VERSION=trunk-$(date +%Y%m%d)
   BRANCH=master
   REMOTE=heads/master
