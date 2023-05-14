@@ -28,8 +28,8 @@ initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
 OUTPUT=$(realpath "${OUTPUT}")
 
-# we assume we don't need to patch the kernel (ie we fix the RUSTC_BOOTSTRAP=1 issue)
-BUILD_DEST=/opt/compiler-explorer/linux-rust/${VERSION}  # Currently needs to be same as the ultimate destination
+# we assume we don't need to patch the kernel (ie we fix the RUST_MODFILE=example issue)
+BUILD_DEST=/opt/compiler-explorer/rust-linux/rust-linux-${VERSION}  # Currently needs to be same as the ultimate destination
 mkdir -p "$(dirname "${BUILD_DEST}")"
 git clone "${URL}" --depth=1 "--branch=${BRANCH}" "${BUILD_DEST}"
 
