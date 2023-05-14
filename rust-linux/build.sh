@@ -39,7 +39,7 @@ rustup default "$(scripts/min-tool-version.sh rustc)"
 rustup component add rust-src
 $HOME/.cargo/bin/cargo install --locked --version "$(scripts/min-tool-version.sh bindgen)" bindgen
 
-make --jobs="$(nproc)" ARCH-x86_64 LLVM=1 defconfig rust.config prepare
+make --jobs="$(nproc)" ARCH=x86_64 LLVM=1 defconfig rust.config prepare
 
 DEST=/root/linux-out
 mkdir "${DEST}"
