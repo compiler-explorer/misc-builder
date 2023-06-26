@@ -32,7 +32,7 @@ cd "${DIR}"
 # Note: Seems to be whitespace-sensitive
 cat > 1.patch << XXX
 diff --git a/movfuscator/host.c b/movfuscator/host.c
-index 36f9b26..4011233 100644
+index 36f9b26..82c1528 100644
 --- a/movfuscator/host.c
 +++ b/movfuscator/host.c
 @@ -1,4 +1,5 @@
@@ -72,7 +72,7 @@ index 36f9b26..4011233 100644
 +    strcpy(buf, "-I");
 +    strncat(buf, getenv("MOVBUILDDIR"), 255);
 +    strncat(buf, "/include", 255);
-+    include[0] = strdup(buf);
++    com[0] = strdup(buf);
 +}
 +
  char *as[]={
@@ -87,27 +87,27 @@ index 36f9b26..4011233 100644
 +    char buf[256];
 +    strcpy(buf, "-L");
 +    strncat(buf, getenv("MOVBUILDDIR"), 255);
-+    include[5] = strdup(buf);
++    ld[5] = strdup(buf);
 +    
 +    strcpy(buf, "-L");
 +    strncat(buf, getenv("MOVBUILDDIR"), 255);
 +    strncat(buf, "/gcc/32", 255);
-+    include[6] = strdup(buf);
++    ld[6] = strdup(buf);
 +    
 +    strcpy(buf, "");
 +    strncat(buf, getenv("MOVBUILDDIR"), 255);
 +    strncat(buf, "/crt0.o", 255);
-+    include[10] = strdup(buf);
++    ld[10] = strdup(buf);
 +    
 +    strcpy(buf, "");
 +    strncat(buf, getenv("MOVBUILDDIR"), 255);
 +    strncat(buf, "/crtf.o", 255);
-+    include[13] = strdup(buf);
++    ld[13] = strdup(buf);
 +    
 +    strcpy(buf, "");
 +    strncat(buf, getenv("MOVBUILDDIR"), 255);
 +    strncat(buf, "/crtd.o", 255);
-+    include[14] = strdup(buf);
++    ld[14] = strdup(buf);
 +}
 +
  int option(char* arg) 
