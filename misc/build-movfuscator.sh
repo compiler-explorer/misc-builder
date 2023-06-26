@@ -28,6 +28,40 @@ git clone "${URL}" "${DIR}"
 
 cd "${DIR}"
 
+# Fix include paths that are baked into the binary
+cat > 1.patch << XXX
+diff --git a/movfuscator/host.c b/movfuscator/host.c
+index 36f9b26..b837acc 100644
+--- a/movfuscator/host.c
++++ b/movfuscator/host.c
+@@ -1,4 +1,5 @@
+ #include <string.h>
++#include <stdlib.h>
+
+ #ifndef LCCDIR
+ #define LCCDIR "/usr/local/lib/lcc/"
+@@ -50,6 +51,17 @@ char *include[]={
+        0
+ };
+
++__attribute__((constructor))
++static void init_include_dirs() {
++       char buf[256];
++       strcpy(buf, "-I");
++       strncat(buf, getenv("MOVINCLUDE"), 255);
++       include[0] = strdup(buf);
++       strcpy(buf, "-I");
++        strncat(buf, getenv("MOVGCCINCLUDE"), 255);
++       include[1] = strdup(buf);
++}
++
+ char *com[]={
+        LCCDIR "rcc",
+        "-target=x86/mov",
+XXX
+
+git apply 1.patch
+
 ./build.sh
 
 mkdir -p "${PREFIX}"
