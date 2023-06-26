@@ -32,7 +32,7 @@ cd "${DIR}"
 # Note: Seems to be whitespace-sensitive
 cat > 1.patch << XXX
 diff --git a/movfuscator/host.c b/movfuscator/host.c
-index 36f9b26..82c1528 100644
+index 36f9b26..373bd44 100644
 --- a/movfuscator/host.c
 +++ b/movfuscator/host.c
 @@ -1,4 +1,5 @@
@@ -69,9 +69,9 @@ index 36f9b26..82c1528 100644
 +__attribute__((constructor))
 +static void init_com() {
 +    char buf[256];
-+    strcpy(buf, "-I");
++    strcpy(buf, "");
 +    strncat(buf, getenv("MOVBUILDDIR"), 255);
-+    strncat(buf, "/include", 255);
++    strncat(buf, "/rcc", 255);
 +    com[0] = strdup(buf);
 +}
 +
