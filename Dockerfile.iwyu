@@ -1,0 +1,50 @@
+FROM ubuntu:20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN dpkg --add-architecture i386
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
+    apt install -y -q \
+    build-essential \
+    curl \
+    gcc-multilib \
+    git \
+    libc6-dev-i386 \
+    libc6-dev:i386 \
+    linux-libc-dev \
+    python3.9 \
+    python3.9-venv \
+    python3-pip \
+    s3cmd \
+    xz-utils \
+    unzip \
+    zlib1g-dev \
+    ninja-build \
+    patchelf \
+    openssh-client
+
+RUN cd /tmp && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -rf aws*
+
+RUN mkdir -p /opt/compiler-explorer
+
+# Add github public key to known_hosts, to enable interaction-less clone
+RUN mkdir /root/.ssh \
+    && touch /root/.ssh/known_hosts \
+    && ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/infra
+
+RUN cd /opt/compiler-explorer/infra && make ce
+RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang 8.0.0'
+RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang 16.0.0'
+
+RUN curl -sL https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-linux-x86_64.tar.gz \
+    | tar zx -C /usr --strip-components=1
+
+RUN mkdir -p /root
+COPY iwyu /root/
+COPY common.sh /root/
+
+WORKDIR /root

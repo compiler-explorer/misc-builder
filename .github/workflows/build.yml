@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ['misc', 'rocm', 'compcert', 'rust-cg-gcc', 'rust-linux']
+        image: ['misc', 'rocm', 'compcert', 'rust-cg-gcc', 'rust-linux', 'iwyu']
     steps:
     - name: Docker Setup Buildx
       uses: docker/setup-buildx-action@v2
