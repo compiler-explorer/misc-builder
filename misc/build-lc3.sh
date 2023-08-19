@@ -6,7 +6,7 @@ source common.sh
 VERSION=$1
 if [[ "${VERSION}" = "trunk" ]]; then
     VERSION=trunk-$(date +%Y%m%d)
-    BRANCH=master
+    BRANCH=main
 else
     BRANCH=V${VERSION}
 fi
@@ -27,8 +27,8 @@ BUILD=${DIR}/build
 
 git clone --recurse-submodules --depth 1 -b "${BRANCH}" "${URL}" "${DIR}"
 
-mkdir "${BUILDDIR}"
-cd "${BUILDDIR}"
+mkdir "${BUILD}"
+cd "${BUILD}"
 cmake ..
 make
 mkdir -p "${PREFIX}"
