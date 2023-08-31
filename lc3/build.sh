@@ -15,10 +15,10 @@ fi
 
 URL=https://github.com/xavierrouth/lc3-compiler
 
-FULLNAME=lc3-compiler-${VERSION}.tar.xz
+FULLNAME=C-LC3-Compiler-${VERSION}.tar.xz
 OUTPUT=$2/${FULLNAME}
 
-REVISION="lc3-compiler-$(get_remote_revision "${URL}" "heads/${BRANCH}")"
+REVISION="C-LC3-Compiler-$(get_remote_revision "${URL}" "heads/${BRANCH}")"
 LAST_REVISION="${3:-}"
 
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
@@ -35,4 +35,4 @@ mkdir -p "${PREFIX}"
 
 cp "${BUILD}/lc3-compile" "${PREFIX}"
 
-complete "${PREFIX}" "lc3-compiler-${VERSION}" "${OUTPUT}"
+complete "${PREFIX}" "C-LC3-Compiler-${VERSION}" "${OUTPUT}"
