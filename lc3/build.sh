@@ -2,6 +2,8 @@
 
 set -ex
 source common.sh
+export PATH="$PATH":"$HOME"/.cargo/bin
+source $HOME/.cargo/env
 
 VERSION=$1
 if [[ "${VERSION}" = "trunk" ]]; then
@@ -11,7 +13,7 @@ else
     BRANCH=V${VERSION}
 fi
 
-URL=https://github.com/xavierrouth/C-LC3-Compiler
+URL=https://github.com/xavierrouth/lc3-compiler
 
 FULLNAME=C-LC3-Compiler-${VERSION}.tar.xz
 OUTPUT=$2/${FULLNAME}
@@ -22,15 +24,13 @@ LAST_REVISION="${3:-}"
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
 PREFIX=$(pwd)/prefix
-DIR=$(pwd)/C-LC3-Compiler
-BUILD=${DIR}/build
+DIR=$(pwd)/lc3-compiler
+BUILD=${DIR}/target/release
 
-git clone --recurse-submodules --depth 1 -b "${BRANCH}" "${URL}" "${DIR}"
+git clone --depth 1 -b "${BRANCH}" "${URL}" "${DIR}"
 
-mkdir "${BUILD}"
-cd "${BUILD}"
-cmake ..
-make
+cd $DIR
+cargo build --release
 mkdir -p "${PREFIX}"
 
 cp "${BUILD}/lc3-compile" "${PREFIX}"
