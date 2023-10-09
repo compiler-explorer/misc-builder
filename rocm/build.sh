@@ -18,7 +18,7 @@ OUTPUT=$(realpath "${OUTPUT}")
 OPT=/opt/compiler-explorer
 
 # update infra
-pushd ${OPT}
+pushd ${OPT}/infra
 git pull
 popd
 
