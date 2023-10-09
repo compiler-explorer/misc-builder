@@ -20,6 +20,7 @@ OPT=/opt/compiler-explorer
 # update infra
 pushd ${OPT}/infra
 git pull
+make ce
 popd
 
 # install the clang-rocm compiler that matches the version
