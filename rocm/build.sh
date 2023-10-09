@@ -16,7 +16,15 @@ initialise "${VERSION}" "${OUTPUT}"
 OUTPUT=$(realpath "${OUTPUT}")
 
 OPT=/opt/compiler-explorer
+
+# update infra
+pushd ${OPT}
+git pull
+popd
+
+# install the clang-rocm compiler that matches the version
 ${OPT}/infra/bin/ce_install install "clang-rocm ${VERSION}"
+
 COMP=${OPT}/clang-rocm-${VERSION}
 DEST=${OPT}/libs/rocm/${VERSION}
 
