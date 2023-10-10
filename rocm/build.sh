@@ -10,6 +10,7 @@ VERSION="${1}"
 ROCM_VERSION=rocm-${VERSION}
 FULLNAME=hip-amd-${ROCM_VERSION}
 OUTPUT=$2/${FULLNAME}.tar.xz
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 initialise "${VERSION}" "${OUTPUT}"
 
@@ -28,6 +29,22 @@ ${OPT}/infra/bin/ce_install install "clang-rocm ${VERSION}"
 
 COMP=${OPT}/clang-rocm-${VERSION}
 DEST=${OPT}/libs/rocm/${VERSION}
+
+# ROCm-Device-Libs
+curl -sL https://github.com/RadeonOpenCompute/ROCm-Device-Libs/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+pushd ROCm-Device-Libs-${ROCM_VERSION}
+for PATCH_FILE in "${SCRIPT_DIR}"/patches/ROCm-Device-Libs-${ROCM_VERSION}-*; do
+  if [ -e "${PATCH_FILE}" ]; then
+    patch -p1 < "${PATCH_FILE}"
+  fi
+done
+cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
+  -GNinja \
+  -DCMAKE_PREFIX_PATH="${COMP}" \
+  -DCMAKE_INSTALL_PREFIX="${COMP}"
+ninja -C build
+ninja -C build install
+popd
 
 # comgr
 curl -sL https://github.com/RadeonOpenCompute/ROCm-CompilerSupport/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
@@ -61,6 +78,17 @@ ninja -C build
 ninja -C build install
 popd
 
+# hipcc
+curl -sL https://github.com/ROCm-Developer-Tools/HIPCC/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+pushd HIPCC-${ROCM_VERSION}
+cmake -S. -Bbuild \
+  -GNinja \
+  -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
+  -DCMAKE_INSTALL_PREFIX="${DEST}"
+ninja -C build
+ninja -C build install
+popd
+
 # hip
 if [ "$VERSION" == "5.7.0" ]; then
   curl -sL https://github.com/ROCm-Developer-Tools/clr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
@@ -72,17 +100,25 @@ fi
 curl -sL https://github.com/ROCm-Developer-Tools/HIP/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
 
 if [ "$VERSION" == "5.7.0" ]; then
-  pushd clr-${ROCM_VERSION}/hipamd
+  pushd clr-${ROCM_VERSION}
+  for PATCH_FILE in "${SCRIPT_DIR}"/patches/hipamd-${ROCM_VERSION}-*; do
+  if [ -e "${PATCH_FILE}" ]; then
+    patch -p1 < "${PATCH_FILE}"
+  fi
+  done
   mkdir build
   pushd build
   cmake -S.. -B. -DCMAKE_BUILD_TYPE=Release \
     -GNinja \
-    -DHIP_COMMON_DIR="${ROOT}/HIP-${ROCM_VERSION}" \
-    -DAMD_OPENCL_PATH="${ROOT}/clr-${ROCM_VERSION}/opencl" \
-    -DROCCLR_PATH="${ROOT}/clr-${ROCM_VERSION}/rocclr" \
+    -DHIP_COMMON_DIR="${SCRIPT_DIR}/HIP-${ROCM_VERSION}" \
+    -DCLR_BUILD_HIP=ON \
+    -DCLR_BUILD_OCL=ON \
     -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
     -DCMAKE_INSTALL_PREFIX="${DEST}" \
-    -DUSE_PROF_API=OFF
+    -DUSE_PROF_API=OFF \
+    -DHIP_PLATFORM=amd \
+    -DHIPCC_BIN_DIR="${DEST}/bin"
+
 else
   pushd hipamd
   for PATCH_FILE in "${SCRIPT_DIR}"/patches/hipamd-${ROCM_VERSION}-*; do
@@ -94,9 +130,9 @@ else
   pushd build
   cmake -S.. -B. -DCMAKE_BUILD_TYPE=Release \
     -GNinja \
-    -DHIP_COMMON_DIR="${ROOT}/HIP-${ROCM_VERSION}" \
-    -DAMD_OPENCL_PATH="${ROOT}/ROCm-OpenCL-Runtime-${ROCM_VERSION}" \
-    -DROCCLR_PATH="${ROOT}/ROCclr-${ROCM_VERSION}" \
+    -DHIP_COMMON_DIR="${SCRIPT_DIR}/HIP-${ROCM_VERSION}" \
+    -DAMD_OPENCL_PATH="${SCRIPT_DIR}/ROCm-OpenCL-Runtime-${ROCM_VERSION}" \
+    -DROCCLR_PATH="${SCRIPT_DIR}/ROCclr-${ROCM_VERSION}" \
     -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
     -DCMAKE_INSTALL_PREFIX="${DEST}" \
     -DUSE_PROF_API=OFF
