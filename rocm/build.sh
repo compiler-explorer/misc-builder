@@ -16,7 +16,16 @@ initialise "${VERSION}" "${OUTPUT}"
 OUTPUT=$(realpath "${OUTPUT}")
 
 OPT=/opt/compiler-explorer
+
+# update infra
+pushd ${OPT}/infra
+git pull
+make ce
+popd
+
+# install the clang-rocm compiler that matches the version
 ${OPT}/infra/bin/ce_install install "clang-rocm ${VERSION}"
+
 COMP=${OPT}/clang-rocm-${VERSION}
 DEST=${OPT}/libs/rocm/${VERSION}
 
@@ -53,26 +62,45 @@ ninja -C build install
 popd
 
 # hip
-git clone --depth 1 https://github.com/ROCm-Developer-Tools/hipamd.git -b ${ROCM_VERSION}
-curl -sL https://github.com/ROCm-Developer-Tools/ROCclr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-curl -sL https://github.com/RadeonOpenCompute/ROCm-OpenCL-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+if [ "$VERSION" == "5.7.0" ]; then
+  curl -sL https://github.com/ROCm-Developer-Tools/clr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+else
+  git clone --depth 1 https://github.com/ROCm-Developer-Tools/hipamd.git -b ${ROCM_VERSION}
+  curl -sL https://github.com/ROCm-Developer-Tools/ROCclr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+  curl -sL https://github.com/RadeonOpenCompute/ROCm-OpenCL-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+fi
 curl -sL https://github.com/ROCm-Developer-Tools/HIP/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-pushd hipamd
-for PATCH_FILE in "${SCRIPT_DIR}"/patches/hipamd-${ROCM_VERSION}-*; do
-  if [ -e "${PATCH_FILE}" ]; then
-    patch -p1 < "${PATCH_FILE}"
-  fi
-done
-mkdir build
-pushd build
-cmake -S.. -B. -DCMAKE_BUILD_TYPE=Release \
-  -GNinja \
-  -DHIP_COMMON_DIR="${ROOT}/HIP-${ROCM_VERSION}" \
-  -DAMD_OPENCL_PATH="${ROOT}/ROCm-OpenCL-Runtime-${ROCM_VERSION}" \
-  -DROCCLR_PATH="${ROOT}/ROCclr-${ROCM_VERSION}" \
-  -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
-  -DCMAKE_INSTALL_PREFIX="${DEST}" \
-  -DUSE_PROF_API=OFF
+
+if [ "$VERSION" == "5.7.0" ]; then
+  pushd clr-${ROCM_VERSION}/hipamd
+  mkdir build
+  pushd build
+  cmake -S.. -B. -DCMAKE_BUILD_TYPE=Release \
+    -GNinja \
+    -DHIP_COMMON_DIR="${ROOT}/HIP-${ROCM_VERSION}" \
+    -DAMD_OPENCL_PATH="${ROOT}/clr-${ROCM_VERSION}/opencl" \
+    -DROCCLR_PATH="${ROOT}/clr-${ROCM_VERSION}/rocclr" \
+    -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
+    -DCMAKE_INSTALL_PREFIX="${DEST}" \
+    -DUSE_PROF_API=OFF
+else
+  pushd hipamd
+  for PATCH_FILE in "${SCRIPT_DIR}"/patches/hipamd-${ROCM_VERSION}-*; do
+    if [ -e "${PATCH_FILE}" ]; then
+      patch -p1 < "${PATCH_FILE}"
+    fi
+  done
+  mkdir build
+  pushd build
+  cmake -S.. -B. -DCMAKE_BUILD_TYPE=Release \
+    -GNinja \
+    -DHIP_COMMON_DIR="${ROOT}/HIP-${ROCM_VERSION}" \
+    -DAMD_OPENCL_PATH="${ROOT}/ROCm-OpenCL-Runtime-${ROCM_VERSION}" \
+    -DROCCLR_PATH="${ROOT}/ROCclr-${ROCM_VERSION}" \
+    -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
+    -DCMAKE_INSTALL_PREFIX="${DEST}" \
+    -DUSE_PROF_API=OFF
+fi
 ninja
 ninja install
 popd # build
