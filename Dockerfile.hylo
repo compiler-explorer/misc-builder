@@ -45,5 +45,3 @@ COPY hylo /root/
 COPY common.sh /root/
 
 WORKDIR /root
-
-RUN ./build.sh trunk /
