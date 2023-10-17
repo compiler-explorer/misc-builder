@@ -45,12 +45,11 @@ swift build --static-swift-stdlib -c release --product hc
 # To ensure we only muck with rpaths for these objects, do this work in a temporary directory.
 # This code copied and modified from compiler-explorer/cobol-builder/build/build.sh
 mkdir -p .build/release/ce_temp_dir
-# REVIEW: Why did the cobol version remove pthread and libc?
 # Note: Use grep to omit virtual shared dynamic objects.
-cp $(ldd ".build/release/hc" | grep -E  '=> /' | awk '{print $3}') .build/release/ce_temp_dir/
+cp $(ldd ".build/release/hc" | grep -E  '=> /' | grep -Ev 'lib(pthread|c|dl|rt).so' | awk '{print $3}') .build/release/ce_temp_dir/
 patchelf --set-rpath '$ORIGIN' $(find .build/release/ce_temp_dir/ -name \*.so\*)
 mv .build/release/ce_temp_dir/* .build/release
 # Note: No need to update rpath for `hc` itself, as it is already $ORIGIN by default.
 rmdir .build/release/ce_temp_dir/
 
-complete .build/release/ "${FULLNAME}" "${OUTPUT}"
+complete .build/release/ "hylo-${VERSION}" "${OUTPUT}"
