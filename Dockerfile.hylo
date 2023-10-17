@@ -1,0 +1,47 @@
+FROM ubuntu:20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -y -q && apt upgrade -y -q
+RUN apt-get install -y -q \
+    build-essential \
+    curl \
+    git \
+    patchelf \
+    python3.9 \
+    python3.9-venv \
+    python3-pip \
+    ssh \
+    wget \
+    software-properties-common
+
+RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+RUN apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-15 main"
+RUN apt-get update -y -q
+
+RUN apt-get install -y -q \
+    libllvm15 \
+    llvm-15 \
+    llvm-15-dev \
+    llvm-15-runtime \
+    pkg-config \
+    libzstd-dev
+    # zstd
+
+RUN ln -s /usr/bin/llvm-config-15 /usr/bin/llvm-config
+
+RUN mkdir -p /opt/compiler-explorer
+RUN mkdir /root/.ssh \
+    && touch /root/.ssh/known_hosts \
+    && ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/infra
+
+RUN cd /opt/compiler-explorer/infra && make ce
+RUN /opt/compiler-explorer/infra/bin/ce_install install 'swift 5.8'
+ENV PATH="${PATH}:/opt/compiler-explorer/swift-5.8/usr/bin"
+
+RUN mkdir -p /root
+COPY hylo /root/
+COPY common.sh /root/
+
+WORKDIR /root
