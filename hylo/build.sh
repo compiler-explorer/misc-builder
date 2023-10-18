@@ -52,4 +52,13 @@ mv .build/release/ce_temp_dir/* .build/release
 # Note: No need to update rpath for `hc` itself, as it is already $ORIGIN by default.
 rmdir .build/release/ce_temp_dir/
 
+# Remove Swifty build artifacts not required to run
+rm -rf .build/release/*.build
+rm -rf .build/release/*.product
+rm -rf .build/release/*.swiftdoc
+rm -rf .build/release/*.swiftmodule
+rm -rf .build/release/*.swiftsourceinfo
+rm -rf .build/release/ModuleCache
+rm .build/release/description.json
+
 complete .build/release/ "hylo-${VERSION}" "${OUTPUT}"
