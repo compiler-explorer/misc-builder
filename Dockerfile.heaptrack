@@ -1,0 +1,27 @@
+FROM ubuntu:20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
+    apt install -y -q \
+    build-essential \
+    curl \
+    git \
+    libunwind-dev \
+    elfutils \
+    libdw-dev \
+    libboost-all-dev \
+    libzstd-dev
+
+RUN apt install -y -q \
+    cmake \
+    unzip
+
+RUN curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux.zip && \
+    unzip ninja-linux.zip && \
+    mv ninja /usr/bin/ninja
+
+RUN mkdir -p /root
+COPY heaptrack /root/
+COPY common.sh /root/
+
+WORKDIR /root
