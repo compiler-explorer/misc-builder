@@ -40,5 +40,8 @@ cp ${BUILDDIR}/bin/heaptrack_print ${PREFIX}/bin
 cp ${BUILDDIR}/lib/heaptrack/libheaptrack_preload.so ${PREFIX}/lib
 cp ${BUILDDIR}/lib/heaptrack/libheaptrack_inject.so ${PREFIX}/lib
 cp ${BUILDDIR}/lib/heaptrack/libexec/heaptrack_interpret ${PREFIX}/libexec
+cp /lib/x86_64-linux-gnu/libboost_iostreams.* ${PREFIX}/lib
+cp /lib/x86_64-linux-gnu/libboost_program_options.* ${PREFIX}/lib
+cp /lib/x86_64-linux-gnu/libboost_filesystem.* ${PREFIX}/lib
 
 complete "${PREFIX}" "heaptrack-${VERSION}" "${OUTPUT}"
