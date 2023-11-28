@@ -16,6 +16,7 @@ URL=https://github.com/microsoft/DirectXShaderCompiler
 FULLNAME=dxc-${VERSION}.tar.xz
 OUTPUT=${ROOT}/${FULLNAME}
 S3OUTPUT=
+EXTRA_CMAKE_ARGS=
 if [[ $2 =~ ^s3:// ]]; then
     S3OUTPUT=$2
 else
@@ -38,6 +39,10 @@ if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
     exit
 fi
 
+if [[ "${VERSION}" == "1.8.2306-preview" ]]; then
+  EXTRA_CMAKE_ARGS="-DCMAKE_CXX_FLAGS=-fpermissive"
+fi
+
 BUILD_DIR=$(pwd)/dxc/build
 DIR=$(pwd)/dxc
 export PATH=${PATH}:/cmake/bin
@@ -45,7 +50,7 @@ git clone --recurse-submodules --depth 1 -b ${BRANCH} ${URL} ${DIR}
 
 cd ${DIR}
 mkdir -p ${BUILD_DIR}
-cmake -S . -B ${BUILD_DIR} -G Ninja -DCMAKE_BUILD_TYPE=Release -C ./cmake/caches/PredefinedParams.cmake
+cmake -S . -B ${BUILD_DIR} -G Ninja -DCMAKE_BUILD_TYPE=Release -C ./cmake/caches/PredefinedParams.cmake $EXTRA_CMAKE_ARGS
 cmake --build ${BUILD_DIR}
 
 export XZ_DEFAULTS="-T 0"
