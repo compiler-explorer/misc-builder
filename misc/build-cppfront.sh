@@ -54,7 +54,7 @@ STAGING_DIR=/opt/compiler-explorer/cppfront-${VERSION}
 GXXPATH=/opt/compiler-explorer/gcc-12.1.0
 
 rm -rf "${STAGING_DIR}"
-mkdir -p "${STAGING_DIR}"
+mkdir -p "${STAGING_DIR}/include"
 
 rm -rf "${SUBDIR}"
 git clone -q --depth 1 --single-branch -b "${BRANCH}" "${URL}" "${SUBDIR}"
@@ -62,6 +62,7 @@ git clone -q --depth 1 --single-branch -b "${BRANCH}" "${URL}" "${SUBDIR}"
 cd "${SUBDIR}"
 
 "${GXXPATH}/bin/g++" -O2 -std=c++20 -static -o "${STAGING_DIR}/cppfront" source/cppfront.cpp
+cp include/cpp2util.h "${STAGING_DIR}/include"
 
 export XZ_DEFAULTS="-T 0"
 tar Jcf "${OUTPUT}" --transform "s,^./,./${SUBDIR}/," -C "${STAGING_DIR}" .
