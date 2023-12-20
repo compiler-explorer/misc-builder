@@ -5,7 +5,7 @@ source common.sh
 
 ROOT=$(pwd)
 VERSION=$1
-CLANGVERSION=16.0.0
+CLANGVERSION=17.0.0
 
 if echo "${VERSION}" | grep 'trunk'; then
     VERSION=trunk-$(date +%Y%m%d)
@@ -18,6 +18,8 @@ else
     REVISION=$(get_remote_revision "${URL}" "tags/${BRANCH}")
     if [[ $VERSION == "0.12" ]]; then
         CLANGVERSION=8.0.0
+    elif [[ $VERSION == "0.20" ]]; then
+        CLANGVERSION=16.0.0
     fi
 fi
 
