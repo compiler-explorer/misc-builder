@@ -7,7 +7,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ['misc', 'rocm', 'compcert', 'rust-cg-gcc', 'rust-linux', 'iwyu', 'lc3', 'nasm', 'hylo', 'heaptrack']
+        image:
+        - compcert
+        - heaptrack
+        - hylo
+        - iwyu
+        - lc3
+        - misc
+        - nasm
+        - rocm
+        - rust-cg-gcc
+        - rust-linux
+        - vast
     steps:
     - name: Docker Setup Buildx
       uses: docker/setup-buildx-action@v2

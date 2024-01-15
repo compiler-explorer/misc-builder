@@ -1,0 +1,36 @@
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -y -q && apt upgrade -y -q
+RUN apt-get install -y -q \
+    build-essential \
+    curl \
+    git \
+    patchelf \
+    lld \
+    ninja-build \
+    python3-pip \
+    ssh \
+    software-properties-common
+
+RUN curl -sL https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-linux-x86_64.tar.gz \
+    | tar zx -C /usr --strip-components=1
+
+RUN bash -c "$(curl -s -o - https://apt.llvm.org/llvm.sh)" 17
+
+RUN apt-get install -y -q \
+ libstdc++-12-dev \
+ llvm-17 \
+ libmlir-17 \
+ libmlir-17-dev \
+ mlir-17-tools \
+ libclang-17-dev
+
+RUN pip3 install lit
+
+RUN mkdir -p /root
+COPY vast /root/
+COPY common.sh /root/
+
+WORKDIR /root
