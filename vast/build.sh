@@ -39,7 +39,9 @@ git clone -q --depth 1 --recursive --single-branch -b "${BRANCH}" "${URL}" "vast
 
 cd "vast-${VERSION}"
 
-env CC=/usr/bin/clang-17 CXX=/usr/bin/clang++-17 --preset ninja-multi-default \
+export CC=/usr/bin/clang-17
+export CXX=/usr/bin/clang++-17
+cmake --preset ninja-multi-default \
   --toolchain ./cmake/lld.toolchain.cmake \
   --install-prefix "${STAGING_DIR}" \
   -DLLVM_EXTERNAL_LIT=/usr/local/bin/lit \
