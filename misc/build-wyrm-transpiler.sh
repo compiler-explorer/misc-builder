@@ -26,7 +26,7 @@ DIR=$(pwd)/wyrm
 
 git clone "${URL}" "${DIR}"
 
-cd "${DIR}"
+cd "${DIR}/transpiler"
 
 mkdir build
 cd build
