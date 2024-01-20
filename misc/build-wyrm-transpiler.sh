@@ -30,8 +30,8 @@ cd "${DIR}/transpiler"
 
 mkdir build
 cd build
-CXX=/opt/compiler-explorer/gcc-12.1.0/bin/g++
-CC=/opt/compiler-explorer/gcc-12.1.0/bin/gcc
+export CXX=/opt/compiler-explorer/gcc-12.1.0/bin/g++
+export CC=/opt/compiler-explorer/gcc-12.1.0/bin/gcc
 cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug
 ninja
 
