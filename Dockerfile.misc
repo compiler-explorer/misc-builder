@@ -44,7 +44,8 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     re2c \
     perl \
     cpanminus \
-    openssh-client 
+    openssh-client \
+    libgmp-dev
 
 RUN cd /tmp && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
