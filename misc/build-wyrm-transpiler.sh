@@ -21,8 +21,8 @@ LAST_REVISION="${3:-}"
 
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
-PREFIX=$(pwd)/prefix
 DIR=$(pwd)/wyrm
+STAGING_DIR=/opt/compiler-explorer/wyrm-${VERSION}
 
 git clone "${URL}" "${DIR}"
 
@@ -32,11 +32,11 @@ mkdir build
 cd build
 export CXX=/opt/compiler-explorer/gcc-12.1.0/bin/g++
 export CC=/opt/compiler-explorer/gcc-12.1.0/bin/gcc
-cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug
-ninja
+cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="$STAGING_DIR"
+ninja install
 
-mkdir -p "${PREFIX}"
-cd ..
-mv build "${PREFIX}/build"
+cp -v libplugin.so "${STAGING_DIR}"
 
-complete "${PREFIX}" "wyrm-${VERSION}" "${OUTPUT}"
+patchelf --set-rpath '$ORIGIN/lib:/opt/compiler-explorer/gcc-12.1.0/lib64/' "${STAGING_DIR}/libplugin.so"
+
+complete "${STAGING_DIR}" "wyrm-${VERSION}" "${OUTPUT}"
