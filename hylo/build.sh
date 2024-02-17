@@ -36,6 +36,8 @@ rm -rf "hylo-${VERSION}"
 git clone -q --depth 1 --single-branch -b "${BRANCH}" "${URL}" "hylo-${VERSION}"
 
 cd "hylo-${VERSION}"
+git submodule update --init
+
 swift package resolve
 .build/checkouts/Swifty-LLVM/Tools/make-pkgconfig.sh /usr/local/lib/pkgconfig/llvm.pc
 swift build --static-swift-stdlib -c release --product hc
