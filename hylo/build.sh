@@ -33,7 +33,7 @@ fi
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
 rm -rf "hylo-${VERSION}"
-git clone -q --depth 1 --single-branch -b "${BRANCH}" "${URL}" "hylo-${VERSION}"
+git clone -q --depth 1 --single-branch --recursive -b "${BRANCH}" "${URL}" "hylo-${VERSION}"
 
 cd "hylo-${VERSION}"
 swift package resolve
