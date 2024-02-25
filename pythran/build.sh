@@ -15,6 +15,10 @@ else
    OUTPUT=${2-$OUTPUT}
 fi
 
+REVISION="heaptrack-${VERSION}"
+LAST_REVISION="${3:-}"
+initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
+
 STAGING_DIR="/opt/compiler-explorer/pythran/pythran-${VERSION}"
 
 conda init
