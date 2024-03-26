@@ -1,0 +1,24 @@
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
+    apt install -y -q \
+    build-essential \
+    curl \
+    python3.10 \
+    git
+
+# Add github public key to known_hosts, to enable interaction-less clone
+RUN mkdir /root/.ssh \
+    && touch /root/.ssh/known_hosts \
+    && ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/infra
+
+RUN cd /opt/compiler-explorer/infra && make ce
+RUN /opt/compiler-explorer/infra/bin/ce_install install 'fpc 3.2.2'
+
+RUN mkdir -p /root
+COPY mads /root/
+COPY common.sh /root/
+
+WORKDIR /root
