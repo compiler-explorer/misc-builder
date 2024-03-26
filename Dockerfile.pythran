@@ -1,0 +1,26 @@
+FROM ubuntu:22.04
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get --assume-yes update \
+    && DEBIAN_FRONTEND=noninteractive apt-get --assume-yes \
+    --no-install-recommends install \
+        ca-certificates \
+        curl \
+        git \
+        bc \
+        make \
+        xz-utils
+
+
+RUN mkdir -p /root
+
+RUN mkdir -p /root/miniconda3
+RUN curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /root/miniconda3/miniconda.sh
+RUN bash /root/miniconda3/miniconda.sh -b -u -p /root/miniconda3
+RUN rm -rf /root/miniconda3/miniconda.sh
+
+ENV PATH="/root/miniconda3/bin:${PATH}"
+
+COPY pythran/ /root/
+COPY common.sh /root/
+
+WORKDIR /root

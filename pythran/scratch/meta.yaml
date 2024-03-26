@@ -1,0 +1,29 @@
+{% set version = "13.2.0" %}
+{% set build = 0 %}
+
+package:
+  name: gcc-dummies
+  version: {{ version }}
+
+build:
+  number: {{ build }}
+
+outputs:
+  - name: gcc_linux-64
+    string: external_{{ build }}
+  - name: gxx_linux-64
+    string: external_{{ build }}
+  - name: libgfortran-ng
+    string: external_{{ build }}
+  - name: libgfortran5
+    string: external_{{ build }}
+  - name: libgcc-ng
+    string: external_{{ build }}
+  - name: libgomp
+    string: external_{{ build }}
+  - name: libstdcxx-ng
+    string: external_{{ build }}
+
+about:
+  license: GPL-3.0-only
+  summary: Dummy package for external GCC compiler and libs.
