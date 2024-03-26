@@ -36,6 +36,8 @@ cd $DIR
 
 cp -Rf base "${PREFIX}/base"
 cp -Rf lib "${PREFIX}/lib"
+mkdir -p "${PREFIX}/src"
+cp -Rf src/targets "${PREFIX}/src/targets"
 mkdir -p "${PREFIX}/blibs"
 cp -Rf blibs/*.pas "${PREFIX}/blibs"
 mkdir -p "${PREFIX}/dlibs"
