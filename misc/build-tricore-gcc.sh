@@ -10,6 +10,8 @@ if echo ${VERSION} | grep 'trunk'; then
     VERSION=trunk-$(date +%Y%m%d)
     BRANCH=main
 else
+    # currently only version 11.3.1 is available
+    VERSION='11.3.1'
     BRANCH=main
 fi
 
