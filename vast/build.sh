@@ -39,17 +39,8 @@ git clone -q --depth 1 --recursive --single-branch -b "${BRANCH}" "${URL}" "vast
 
 cd "vast-${VERSION}"
 
-export CC=/usr/bin/clang-17
-export CXX=/usr/bin/clang++-17
-cmake --preset ninja-multi-default \
-  --toolchain ./cmake/lld.toolchain.cmake \
-  --install-prefix "${STAGING_DIR}" \
-  -DLLVM_EXTERNAL_LIT=/usr/local/bin/lit \
-  -DCMAKE_INSTALL_RPATH:PATH="\$ORIGIN/../lib" \
-  -DCMAKE_PREFIX_PATH="/usr/lib/llvm-17;/usr/lib/llvm-17/lib/cmake/mlir;/usr/lib/llvm-17/lib/cmake/clang"
-
-cmake --build --preset ninja-rel
-cmake --install ./builds/ninja-multi-default
+cmake --workflow --preset compiler-explorer
+cmake --install ./builds/compiler-explorer
 
 # Copy all shared object dependencies into the release directory to create a hermetic build, per
 # Compiler Explorer requirements. Update rpath for these objects to $ORIGIN.

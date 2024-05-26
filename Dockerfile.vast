@@ -17,17 +17,8 @@ RUN apt-get install -y -q \
 RUN curl -sL https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-linux-x86_64.tar.gz \
     | tar zx -C /usr --strip-components=1
 
-RUN bash -c "$(curl -s -o - https://apt.llvm.org/llvm.sh)" llvm.sh 17
 
-RUN apt-get install -y -q \
- libstdc++-12-dev \
- llvm-17 \
- libmlir-17 \
- libmlir-17-dev \
- mlir-17-tools \
- libclang-17-dev
-
-RUN pip3 install lit
+RUN bash -c "$(curl -s -o - https://raw.githubusercontent.com/trailofbits/vast/master/scripts/setup_llvm_dependencies.sh)"
 
 RUN mkdir -p /root
 COPY vast /root/
