@@ -38,6 +38,7 @@ git clone -q --depth 1 --single-branch --recursive -b "${BRANCH}" "${URL}" "hylo
 cd "hylo-${VERSION}"
 swift package resolve
 .build/checkouts/Swifty-LLVM/Tools/make-pkgconfig.sh /usr/local/lib/pkgconfig/llvm.pc
+./Tools/set-hc-version.sh
 swift build --static-swift-stdlib -c release --product hc
 
 # Copy all shared object dependencies into the release directory to create a hermetic build, per
