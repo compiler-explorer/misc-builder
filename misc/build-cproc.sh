@@ -15,7 +15,7 @@ if [[ "${VERSION}" != "master" ]]; then
     exit 1
 fi
 
-URL="https://github.com/michaelforney/cproc.git"
+URL="https://git.sr.ht/~mcf/cproc"
 BRANCH="master"
 
 BASENAME=cproc-${VERSION}-$(date +%Y%m%d)
@@ -66,16 +66,8 @@ git am ../../cproc-version.patch
 
 ./configure
 
-git submodule update --init --recursive
-make -j"$(nproc)" qbe
-PATH=$PWD/qbe/obj:$PATH
-
 make -j"$(nproc)"
 make install DESTDIR="$PWD/root" BINDIR=/bin
-
-pushd qbe
-make install DESTDIR="$PWD/../root" BINDIR=/bin
-popd
 
 pushd root
 
