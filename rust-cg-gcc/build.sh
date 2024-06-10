@@ -33,6 +33,10 @@ initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
 OUTPUT=$(realpath "${OUTPUT}")
 
+# Needed because the later y.sh will call "git am" and this needs user info.
+git config --global user.email "nope@nope.com"
+git config --global user.name "John Nope"
+
 rm -rf  build-rustc-cg-gcc
 mkdir -p build-rustc-cg-gcc
 
@@ -46,11 +50,6 @@ export PATH=$RUSTUP_HOME/bin:$PATH
 
 ## Download rustc_cg_gcc
 git clone --depth 1 "${CG_GCC_URL}" --branch "${CG_GCC_BRANCH}"
-
-pushd rustc_codegen_gcc
-git clone https://github.com/llvm/llvm-project llvm --depth 1 --single-branch
-export RUST_COMPILER_RT_ROOT="$PWD/llvm/compiler-rt"
-popd
 
 ## Download rustup and install it in a local dir
 ## Installs :
@@ -68,16 +67,6 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
          --default-toolchain  "$(grep channel rustc_codegen_gcc/rust-toolchain | sed 's/channel = "\(.*\)"/\1/')"
 
 source  "$PWD/rustup/env"
-
-##
-## Prepare rustc_cg_gcc
-##
-pushd rustc_codegen_gcc
-
-# where the libgccjit.so will be installed
-echo "$PREFIX/lib"  > gcc_path
-
-popd
 
 ##
 ## Build customized GCC with libgccjit
@@ -129,18 +118,17 @@ make -j"$(nproc)"
 make -j"$(nproc)" install-strip
 popd
 
+libgccjit_path=$(dirname $(readlink -f `find "$PREFIX" -name libgccjit.so`))
+
 ##
 ## Back to rustc_cg_gcc for building
 ##
 pushd rustc_codegen_gcc
-./prepare_build.sh
 
-## Temporary fix, see
-## https://github.com/compiler-explorer/compiler-explorer/issues/4715. This
-## causes all the crates to be built with panic=abort, so any unwinding will be
-## doomed :(
-CG_RUSTFLAGS=-Cpanic=abort \
-    ./build.sh --release
+echo "gcc-path = \"$libgccjit_path\"" > config.toml
+
+./y.sh prepare
+./y.sh build --sysroot --release
 
 popd
 
@@ -176,7 +164,7 @@ mv ./gcc-install/lib/libgccjit.so* toolroot/lib
 mv ./rustc_codegen_gcc/target/release/librustc_codegen_gcc.so toolroot/lib
 
 # sysroot
-mv ./rustc_codegen_gcc/build_sysroot/sysroot toolroot/
+mv ./rustc_codegen_gcc/build/build_sysroot/sysroot toolroot/
 
 ##
 ## Fixup RPATH for the librustc_codegen_gcc.so so it can find libgccjit
@@ -190,11 +178,17 @@ patchelf --set-rpath '$ORIGIN/' toolroot/lib/librustc_codegen_gcc.so
 ## - check for assembly output
 ## - check for correct exec output
 
+
 echo "fn main() -> Result<(), &'static str> { Ok(()) }" > /tmp/test.rs
-./toolroot/bin/rustc -Cpanic=abort -Zcodegen-backend=librustc_codegen_gcc.so  --sysroot toolroot/sysroot --emit asm -o test.s  /tmp/test.rs
+
+(export LD_LIBRARY_PATH="$PWD/toolroot/lib";
+ export LIBRARY_PATH="$PWD/toolroot/lib";
+ ./toolroot/bin/rustc -Zcodegen-backend="$PWD/toolroot/lib/librustc_codegen_gcc.so"  --sysroot toolroot/sysroot --emit asm -o test.s  /tmp/test.rs)
 test test.s
 
-./toolroot/bin/rustc -Cpanic=abort -Zcodegen-backend=librustc_codegen_gcc.so --sysroot toolroot/sysroot /tmp/test.rs
+(export LD_LIBRARY_PATH="$PWD/toolroot/lib";
+ export LIBRARY_PATH="$PWD/toolroot/lib";
+./toolroot/bin/rustc -Zcodegen-backend="$PWD/toolroot/lib/librustc_codegen_gcc.so" --sysroot toolroot/sysroot /tmp/test.rs)
 ./test
 
 # Don't try to compress the binaries as they don't like it
