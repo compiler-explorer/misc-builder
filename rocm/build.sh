@@ -12,6 +12,12 @@ FULLNAME=hip-amd-${ROCM_VERSION}
 OUTPUT=$2/${FULLNAME}.tar.xz
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+if [[ "${VERSION}" =~ ([0-9]+)\.([0-9]+)\.[^.]+ ]]; then
+    ROCM_MAJOR=${BASH_REMATCH[1]}
+    ROCM_MINOR=${BASH_REMATCH[2]}
+    ROCM_MAJOR_MINOR=$(( ROCM_MAJOR * 100 + ROCM_MINOR ))
+fi
+
 initialise "${VERSION}" "${OUTPUT}"
 
 OUTPUT=$(realpath "${OUTPUT}")
@@ -30,8 +36,20 @@ ${OPT}/infra/bin/ce_install install "clang-rocm ${VERSION}"
 COMP=${OPT}/clang-rocm-${VERSION}
 DEST=${OPT}/libs/rocm/${VERSION}
 
+rm -rf llvm-project-$ROCM_VERSION ROCm-Device-Libs-$ROCM_VERSION ROCm-CompilerSupport-$ROCM_VERSION HIPCC-$ROCM_VERSION
+if (( ROCM_MAJOR_MINOR < 601 )); then
+    curl -sL https://github.com/ROCm/ROCm-Device-Libs/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+    curl -sL https://github.com/ROCm/ROCm-CompilerSupport/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+    curl -sL https://github.com/ROCm/HIPCC/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+else
+    git clone --depth 1 --single-branch -b "$ROCM_VERSION" "https://github.com/ROCm/llvm-project.git" "llvm-project-$ROCM_VERSION"
+    ln -fs llvm-project-$ROCM_VERSION/amd/device-libs ROCm-Device-Libs-$ROCM_VERSION
+    mkdir -p ROCm-CompilerSupport-$ROCM_VERSION/lib
+    ln -fs ../../llvm-project-$ROCM_VERSION/amd/comgr ROCm-CompilerSupport-$ROCM_VERSION/lib/comgr
+    ln -fs llvm-project-$ROCM_VERSION/amd/hipcc HIPCC-$ROCM_VERSION
+fi
+
 # ROCm-Device-Libs
-curl -sL https://github.com/RadeonOpenCompute/ROCm-Device-Libs/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
 pushd ROCm-Device-Libs-${ROCM_VERSION}
 for PATCH_FILE in "${SCRIPT_DIR}"/patches/ROCm-Device-Libs-${ROCM_VERSION}-*; do
   if [ -e "${PATCH_FILE}" ]; then
@@ -47,7 +65,6 @@ ninja -C build install
 popd
 
 # comgr
-curl -sL https://github.com/RadeonOpenCompute/ROCm-CompilerSupport/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
 pushd ROCm-CompilerSupport-${ROCM_VERSION}
 cmake -Slib/comgr -Bbuild -DCMAKE_BUILD_TYPE=Release \
   -GNinja \
@@ -57,29 +74,7 @@ ninja -C build
 ninja -C build install
 popd
 
-# roct-thunk-interface
-curl -sL https://github.com/RadeonOpenCompute/ROCT-Thunk-Interface/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-pushd ROCT-Thunk-Interface-${ROCM_VERSION}
-cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
-  -GNinja \
-  -DCMAKE_INSTALL_PREFIX="${DEST}"
-ninja -C build
-ninja -C build install
-popd
-
-# rocr-runtime
-curl -sL https://github.com/RadeonOpenCompute/ROCR-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-pushd ROCR-Runtime-${ROCM_VERSION}
-cmake -Ssrc -Bbuild \
-  -GNinja \
-  -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
-  -DCMAKE_INSTALL_PREFIX="${DEST}"
-ninja -C build
-ninja -C build install
-popd
-
 # hipcc
-curl -sL https://github.com/ROCm-Developer-Tools/HIPCC/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
 pushd HIPCC-${ROCM_VERSION}
 cmake -S. -Bbuild \
   -GNinja \
@@ -89,17 +84,39 @@ ninja -C build
 ninja -C build install
 popd
 
-# hip
-if [ "$VERSION" == "5.7.0" ]; then
-  curl -sL https://github.com/ROCm-Developer-Tools/clr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-else
-  git clone --depth 1 https://github.com/ROCm-Developer-Tools/hipamd.git -b ${ROCM_VERSION}
-  curl -sL https://github.com/ROCm-Developer-Tools/ROCclr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-  curl -sL https://github.com/RadeonOpenCompute/ROCm-OpenCL-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-fi
-curl -sL https://github.com/ROCm-Developer-Tools/HIP/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+# roct-thunk-interface
+curl -sL https://github.com/ROCm/ROCT-Thunk-Interface/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+pushd ROCT-Thunk-Interface-${ROCM_VERSION}
+cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
+  -GNinja \
+  -DCMAKE_INSTALL_PREFIX="${DEST}"
+ninja -C build
+ninja -C build install
+popd
 
-if [ "$VERSION" == "5.7.0" ]; then
+# rocr-runtime
+curl -sL https://github.com/ROCm/ROCR-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+pushd ROCR-Runtime-${ROCM_VERSION}
+cmake -Ssrc -Bbuild \
+  -GNinja \
+  -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
+  -DCMAKE_INSTALL_PREFIX="${DEST}"
+ninja -C build
+ninja -C build install
+popd
+
+
+# hip
+if (( ROCM_MAJOR_MINOR >= 507 )); then
+  curl -sL https://github.com/ROCm/clr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+else
+  git clone --depth 1 https://github.com/ROCm/hipamd.git -b ${ROCM_VERSION}
+  curl -sL https://github.com/ROCm/ROCclr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+  curl -sL https://github.com/ROCm/ROCm-OpenCL-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+fi
+curl -sL https://github.com/ROCm/HIP/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+
+if (( ROCM_MAJOR_MINOR >= 507 )); then
   pushd clr-${ROCM_VERSION}
   for PATCH_FILE in "${SCRIPT_DIR}"/patches/hipamd-${ROCM_VERSION}-*; do
   if [ -e "${PATCH_FILE}" ]; then
