@@ -5,7 +5,7 @@ source common.sh
 
 ROOT=$(pwd)
 VERSION=$1
-CLANGVERSION=17.0.1
+CLANGVERSION=18.1.0
 
 if echo "${VERSION}" | grep 'trunk'; then
     VERSION=trunk-$(date +%Y%m%d)
@@ -20,6 +20,8 @@ else
         CLANGVERSION=8.0.0
     elif [[ $VERSION == "0.20" ]]; then
         CLANGVERSION=16.0.0
+    elif [[ $VERSION == "0.21" ]]; then
+        CLANGVERSION=17.0.1
     fi
 fi
 
