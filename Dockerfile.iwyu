@@ -40,6 +40,7 @@ RUN cd /opt/compiler-explorer/infra && make ce
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang 8.0.0'
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang 16.0.0'
 RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang 17.0.1'
+RUN /opt/compiler-explorer/infra/bin/ce_install install 'clang 18.1.0'
 
 RUN curl -sL https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-linux-x86_64.tar.gz \
     | tar zx -C /usr --strip-components=1
