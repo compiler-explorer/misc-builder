@@ -59,7 +59,7 @@ done
 cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
   -GNinja \
   -DCMAKE_PREFIX_PATH="${COMP}" \
-  -DCMAKE_INSTALL_PREFIX="${COMP}"
+  -DCMAKE_INSTALL_PREFIX="${DEST}"
 ninja -C build
 ninja -C build install
 popd
