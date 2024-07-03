@@ -15,12 +15,13 @@ RUN apt install -y -q \
     ninja-build \
     openssh-client \
     pkg-config \
-    python3.9 \
-    python3.9-venv \
+    python3.10 \
+    python3.10-venv \
     xxd \
     xz-utils \
-    zlib1g-dev \
-    wget
+    zlib1g-dev
+
+RUN apt install -y -q wget
 
 # Add github public key to known_hosts, to enable interaction-less clone
 RUN mkdir /root/.ssh \
