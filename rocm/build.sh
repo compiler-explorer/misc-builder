@@ -62,6 +62,7 @@ cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX="${COMP}"
 ninja -C build
 ninja -C build install
+mkdir -p "$DEST"
 cp -r "$COMP"/amdgcn "$DEST"
 popd
 
