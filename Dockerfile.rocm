@@ -19,7 +19,8 @@ RUN apt install -y -q \
     python3.9-venv \
     xxd \
     xz-utils \
-    zlib1g-dev
+    zlib1g-dev \
+    wget
 
 # Add github public key to known_hosts, to enable interaction-less clone
 RUN mkdir /root/.ssh \
