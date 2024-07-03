@@ -59,15 +59,17 @@ done
 cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
   -GNinja \
   -DCMAKE_PREFIX_PATH="${COMP}" \
-  -DCMAKE_INSTALL_PREFIX="${DEST}"
+  -DCMAKE_INSTALL_PREFIX="${COMP}"
 ninja -C build
 ninja -C build install
+cp -r "$COMP"/amdgcn "$DEST"
 popd
 
 # comgr
 pushd ROCm-CompilerSupport-${ROCM_VERSION}
 cmake -Slib/comgr -Bbuild -DCMAKE_BUILD_TYPE=Release \
   -GNinja \
+  -DBUILD_TESTING=OFF \
   -DCMAKE_PREFIX_PATH="${COMP}" \
   -DCMAKE_INSTALL_PREFIX="${DEST}"
 ninja -C build
@@ -123,7 +125,7 @@ if (( ROCM_MAJOR_MINOR >= 507 )); then
     patch -p1 < "${PATCH_FILE}"
   fi
   done
-  mkdir build
+  mkdir -p build
   pushd build
   cmake -S.. -B. -DCMAKE_BUILD_TYPE=Release \
     -GNinja \
@@ -143,7 +145,7 @@ else
       patch -p1 < "${PATCH_FILE}"
     fi
   done
-  mkdir build
+  mkdir -p build
   pushd build
   cmake -S.. -B. -DCMAKE_BUILD_TYPE=Release \
     -GNinja \
