@@ -73,6 +73,9 @@ mv include "${STAGING_DIR}/"
 mv ../runtime "${STAGING_DIR}/"
 mv ../.clang-format "${STAGING_DIR}/"
 
+rm "${STAGING_DIR}/bin/jakt"
+ln -sr "${STAGING_DIR}/bin/jakt-stage1" "${STAGING_DIR}/bin/jakt"
+
 export XZ_DEFAULTS="-T 0"
 tar Jcf "${OUTPUT}" --transform "s,^./,./${SUBDIR}/," -C "${STAGING_DIR}" .
 
