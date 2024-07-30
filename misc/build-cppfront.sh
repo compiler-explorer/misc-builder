@@ -62,7 +62,7 @@ git clone -q --depth 1 --single-branch -b "${BRANCH}" "${URL}" "${SUBDIR}"
 cd "${SUBDIR}"
 
 "${GXXPATH}/bin/g++" -O2 -std=c++20 -static -o "${STAGING_DIR}/cppfront" source/cppfront.cpp
-cp include/cpp2util.h "${STAGING_DIR}/include"
+cp include/* "${STAGING_DIR}/include"
 
 export XZ_DEFAULTS="-T 0"
 tar Jcf "${OUTPUT}" --transform "s,^./,./${SUBDIR}/," -C "${STAGING_DIR}" .
