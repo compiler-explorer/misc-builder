@@ -40,7 +40,7 @@ git clone -q --depth 1 --recursive --single-branch -b "${BRANCH}" "${URL}" "vast
 cd "vast-${VERSION}"
 
 cmake --workflow --preset compiler-explorer
-cmake --install ./builds/compiler-explorer
+cmake --install ./builds/compiler-explorer --prefix "$STAGING_DIR"
 
 # Copy all shared object dependencies into the release directory to create a hermetic build, per
 # Compiler Explorer requirements. Update rpath for these objects to $ORIGIN.
