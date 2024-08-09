@@ -32,7 +32,8 @@ fi
 
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
-STAGING_DIR=/opt/compiler-explorer/vast-${VERSION}
+export STAGING_DIR=/opt/compiler-explorer/vast-${VERSION}
+export VCPKG_ROOT=/vcpkg
 
 rm -rf "vast-${VERSION}"
 git clone -q --depth 1 --recursive --single-branch -b "${BRANCH}" "${URL}" "vast-${VERSION}"

@@ -12,13 +12,21 @@ RUN apt-get install -y -q \
     ninja-build \
     python3-pip \
     ssh \
-    software-properties-common
+    software-properties-common \
+    zip \
+    unzip \
+    tar \
+    pkg-config
 
-RUN curl -sL https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-linux-x86_64.tar.gz \
+RUN curl -sL https://github.com/Kitware/CMake/releases/download/v3.30.2/cmake-3.30.2-linux-x86_64.tar.gz \
     | tar zx -C /usr --strip-components=1
 
 
 RUN bash -c "$(curl -s -o - https://raw.githubusercontent.com/trailofbits/vast/master/scripts/setup_llvm_dependencies.sh)"
+
+RUN mkdir -p /vcpkg && \
+    git clone https://github.com/microsoft/vcpkg /vcpkg && \
+    VCPKG_FORCE_SYSTEM_BINARIES=1 /vcpkg/bootstrap-vcpkg.sh
 
 RUN mkdir -p /root
 COPY vast /root/
