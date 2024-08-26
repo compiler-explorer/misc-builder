@@ -15,7 +15,9 @@ LAST_REVISION="${3:-}"
 
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
+ROOT=$(pwd)
 DIR=$(pwd)/build
+INFRA=$(pwd)/infra
 
 mkdir "${DIR}"
 cd "${DIR}"
@@ -25,6 +27,13 @@ if [[ $VERSION == 'trunk' ]]; then
 else
     git clone --depth 1 ${URL} -b "${VERSION}"
 fi;
+
+cd "${ROOT}"
+git clone https://github.com/compiler-explorer/infra
+cd "${INFRA}"
+make ce
+mkdir -p /opt/compiler-explorer/staging
+bin/ce_install install 'gcc/arm64 13.2.0'
 
 BUILDDIR=${DIR}/heaptrack/build
 mkdir "${BUILDDIR}"
@@ -50,15 +59,15 @@ PREFIX=$(pwd)/amd64
 # rm -Rf *
 
 curl -sL -o boost.tgz https://conan.compiler-explorer.com/downloadpkg/boost_bin/1.85.0/arm64g1320
-curl -sL -o zlib.tgz https://zlib.net/current/zlib.tar.gz
+curl -sL -o zlib.tgz https://conan.compiler-explorer.com/downloadpkg/zlib/1.3.1/arm64g1320
 curl -sL -o libunwind.zip https://github.com/libunwind/libunwind/archive/refs/tags/v1.8.1.zip
 curl -sL -o elfutils.tar.bz2 https://sourceware.org/elfutils/ftp/0.191/elfutils-0.191.tar.bz2
 
 mkdir -p /usr/local/boost
 tar -xzf boost.tgz -C /usr/local/boost
 
-mkdir -p /usr/local/zlib/src
-tar -xzf zlib.tgz -C /usr/local/zlib/src
+mkdir -p /usr/local/zlib
+tar -xzf zlib.tgz -C /usr/local/zlib
 
 mkdir -p /usr/local/elfutils/src
 tar -xjf elfutils.tar.bz2 -C /usr/local/elfutils/src
@@ -68,13 +77,8 @@ cd /usr/local/libunwind/src
 unzip -q "${BUILDDIR}/libunwind.zip"
 
 PREFIX=$(pwd)/aarch64
-export CXX=$(which aarch64-linux-gnu-g++)
-export CC=$(which aarch64-linux-gnu-gcc)
-
-cd /usr/local/zlib/src/zlib*
-./configure --prefix=/usr/local/zlib
-make
-make install
+export CXX=/opt/compiler-explorer/arm64/gcc-13.2.0/aarch64-unknown-linux-gnu/bin/aarch64-unknown-linux-gnu-g++
+export CC=/opt/compiler-explorer/arm64/gcc-13.2.0/aarch64-unknown-linux-gnu/bin/aarch64-unknown-linux-gnu-gcc
 
 export TARGET=aarch64-linux-gnu
 
@@ -87,8 +91,8 @@ make install
 cd /usr/local/elfutils/src/elfutils*
 
 export LDFLAGS="-Wl,-rpath=/usr/local/zlib/lib"
-./configure "CC=$CC -L/usr/local/zlib/lib" --with-zlib --disable-debuginfod --disable-libdebuginfod --prefix=/usr/local/elfutils --build=x86_64-linux-gnu --host=aarch64-linux-gnu || /bin/true
-make
+./configure "CC=$CC -L/usr/local/zlib/lib -I/usr/local/zlib/include -Wl,-rpath=/usr/local/zlib/lib -lz" "CXX=$CXX -L/usr/local/zlib/lib -I/usr/local/zlib/include -Wl,-rpath=/usr/local/zlib/lib -lz" --with-zlib --disable-debuginfod --disable-libdebuginfod --prefix=/usr/local/elfutils --build=x86_64-linux-gnu --host=aarch64-linux-gnu || /bin/true
+make --trace
 make install
 
 ls -l /usr/local/elfutils
