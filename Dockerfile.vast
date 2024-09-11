@@ -2,6 +2,8 @@ FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+RUN echo hi, im a comment to cleanse the docker layers
+
 RUN apt-get update -y -q && apt upgrade -y -q
 RUN apt-get install -y -q \
     build-essential \
