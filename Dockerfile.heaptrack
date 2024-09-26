@@ -1,23 +1,31 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
+
 RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     apt install -y -q \
     build-essential \
+    binutils-multiarch \
     curl \
     git \
+    autopoint \
+    pkg-config \
     libunwind-dev \
     elfutils \
     libdw-dev \
     libboost-all-dev \
-    libzstd-dev
-
-RUN apt install -y -q \
+    libzstd-dev \
     cmake \
+    gawk \
     unzip
 
-RUN curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux.zip && \
-    unzip ninja-linux.zip && \
+RUN [ "$(uname -m)" = "arm64" ]; \
+    curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux-aarch64.zip
+
+RUN [ "$(uname -m)" = "x86_64" ]; \
+    curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux.zip
+
+RUN unzip ninja-linux.zip && \
     mv ninja /usr/bin/ninja
 
 RUN mkdir -p /root

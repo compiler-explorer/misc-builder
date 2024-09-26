@@ -15,8 +15,9 @@ LAST_REVISION="${3:-}"
 
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
-PREFIX=$(pwd)/prefix
+ROOT=$(pwd)
 DIR=$(pwd)/build
+INFRA=$(pwd)/infra
 
 mkdir "${DIR}"
 cd "${DIR}"
@@ -24,12 +25,22 @@ cd "${DIR}"
 if [[ $VERSION == 'trunk' ]]; then
     git clone --depth 1 ${URL}
 else
-    git clone --depth 1 ${URL} -b ${VERSION}
+    git clone --depth 1 ${URL} -b "${VERSION}"
 fi;
+
+cd "${ROOT}"
+git clone https://github.com/compiler-explorer/infra
+cd "${INFRA}"
+make ce
+mkdir -p /opt/compiler-explorer/staging
 
 BUILDDIR=${DIR}/heaptrack/build
 mkdir "${BUILDDIR}"
 cd "${BUILDDIR}"
+
+
+PREFIX=$(pwd)/heaptrack
+ARCH=$(uname -m)
 
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build . --target heaptrack_unwind heaptrack_preload heaptrack_print heaptrack_interpret heaptrack_inject
@@ -40,8 +51,8 @@ cp ${BUILDDIR}/bin/heaptrack_print ${PREFIX}/bin
 cp ${BUILDDIR}/lib/heaptrack/libheaptrack_preload.so ${PREFIX}/lib
 cp ${BUILDDIR}/lib/heaptrack/libheaptrack_inject.so ${PREFIX}/lib
 cp ${BUILDDIR}/lib/heaptrack/libexec/heaptrack_interpret ${PREFIX}/libexec
-cp /lib/x86_64-linux-gnu/libboost_iostreams.* ${PREFIX}/lib
-cp /lib/x86_64-linux-gnu/libboost_program_options.* ${PREFIX}/lib
-cp /lib/x86_64-linux-gnu/libboost_filesystem.* ${PREFIX}/lib
+cp /lib/${ARCH}-linux-gnu/libboost_iostreams.* ${PREFIX}/lib
+cp /lib/${ARCH}-linux-gnu/libboost_program_options.* ${PREFIX}/lib
+cp /lib/${ARCH}-linux-gnu/libboost_filesystem.* ${PREFIX}/lib
 
-complete "${PREFIX}" "heaptrack-${VERSION}" "${OUTPUT}"
+complete "${PREFIX}" "heaptrack-${ARCH}-${VERSION}" "${OUTPUT}"
