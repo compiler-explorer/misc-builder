@@ -34,7 +34,6 @@ jobs:
       id: hub_build
       uses: docker/build-push-action@v5
       with:
-        platforms: linux/amd64
         push: ${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}
         tags: compilerexplorer/${{ matrix.image }}-builder:latest
         cache-from: type=registry,ref=compilerexplorer/${{ matrix.image }}-builder:latest
@@ -60,10 +59,9 @@ jobs:
         id: hub_build
         uses: docker/build-push-action@v5
         with:
-          platforms: linux/arm64
           push: ${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}
-          tags: compilerexplorer/${{ matrix.image }}-builder:latest
-          cache-from: type=registry,ref=compilerexplorer/${{ matrix.image }}-builder:latest
+          tags: compilerexplorer/${{ matrix.image }}-builder:latest-arm64
+          cache-from: type=registry,ref=compilerexplorer/${{ matrix.image }}-builder:latest-arm64
           cache-to: type=inline,mode=max
           file: Dockerfile.${{ matrix.image }}
       - name: Docker Hub Image Digest
