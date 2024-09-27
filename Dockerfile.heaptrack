@@ -21,11 +21,11 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     unzip
 
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-    curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux-aarch64.zip \
+    curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.12.0/ninja-linux-aarch64.zip \
     ; fi
 
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-    curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux.zip \
+    curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.12.0/ninja-linux.zip \
     ; fi
 
 RUN unzip ninja-linux.zip && \
