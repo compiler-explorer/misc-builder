@@ -1,6 +1,7 @@
 FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG TARGETPLATFORM
 
 RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     apt install -y -q \
@@ -19,11 +20,11 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     gawk \
     unzip
 
-RUN if [ "$(uname -m)" = "arm64" ]; then \
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
     curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux-aarch64.zip \
     ; fi
 
-RUN if [ "$(uname -m)" = "x86_64" ]; then \
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux.zip \
     ; fi
 
