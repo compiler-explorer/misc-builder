@@ -7,6 +7,8 @@ VERSION=$1
 
 URL=https://github.com/KDE/heaptrack.git
 
+ARCH=$(uname -m)
+
 FULLNAME=heaptrack-${ARCH}-${VERSION}.tar.xz
 OUTPUT=$2/${FULLNAME}
 
@@ -40,7 +42,6 @@ cd "${BUILDDIR}"
 
 
 PREFIX=$(pwd)/heaptrack
-ARCH=$(uname -m)
 
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build . --target heaptrack_unwind heaptrack_preload heaptrack_print heaptrack_interpret heaptrack_inject
