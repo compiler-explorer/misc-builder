@@ -59,6 +59,7 @@ jobs:
         id: hub_build
         uses: docker/build-push-action@v5
         with:
+          platforms: linux/arm64
           push: ${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}
           tags: compilerexplorer/${{ matrix.image }}-builder:latest
           cache-from: type=registry,ref=compilerexplorer/${{ matrix.image }}-builder:latest
