@@ -7,7 +7,7 @@ VERSION=$1
 
 URL=https://github.com/KDE/heaptrack.git
 
-FULLNAME=heaptrack-${VERSION}.tar.xz
+FULLNAME=heaptrack-${ARCH}-${VERSION}.tar.xz
 OUTPUT=$2/${FULLNAME}
 
 REVISION="heaptrack-${VERSION}"
