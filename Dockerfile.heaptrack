@@ -19,11 +19,13 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     gawk \
     unzip
 
-RUN [ "$(uname -m)" = "arm64" ]; \
-    curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux-aarch64.zip
+RUN if [ "$(uname -m)" = "arm64" ]; then \
+    curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux-aarch64.zip \
+    ; fi
 
-RUN [ "$(uname -m)" = "x86_64" ]; \
-    curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux.zip
+RUN if [ "$(uname -m)" = "x86_64" ]; then \
+    curl -L -o ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux.zip \
+    ; fi
 
 RUN unzip ninja-linux.zip && \
     mv ninja /usr/bin/ninja
