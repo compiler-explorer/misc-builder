@@ -9,7 +9,7 @@ source common.sh
 
 ROOT=$(pwd)
 VERSION=$1
-URL="https://github.com/tothambrus11/hylo"
+URL="https://github.com/hylo-lang/hylo"
 
 if echo "${VERSION}" | grep 'trunk'; then
     VERSION=trunk-$(date +%Y%m%d)
