@@ -1,0 +1,22 @@
+FROM ubuntu:20.04
+
+# Enable source repositories so we can use `apt build-dep` to get all the
+# build dependencies for Python 3.5+.
+RUN sed -i -- 's/#deb-src/deb-src/g' /etc/apt/sources.list && \
+    sed -i -- 's/# deb-src/deb-src/g' /etc/apt/sources.list
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
+    apt -q build-dep -y python3.8 && \
+    apt -q install -y \
+    curl \
+    git \
+    libssl-dev \
+    unzip \
+    xz-utils
+
+RUN mkdir -p /root
+COPY python /root/
+COPY common.sh /root/
+
+WORKDIR /root

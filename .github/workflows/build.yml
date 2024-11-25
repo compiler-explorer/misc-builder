@@ -15,6 +15,7 @@ jobs:
         - lc3
         - misc
         - nasm
+        - python
         - pythran
         - rocm
         - rust-cg-gcc
