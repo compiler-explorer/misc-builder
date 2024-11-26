@@ -37,7 +37,7 @@ export LD_LIBRARY_PATH=${SSL_PREFIX}/lib64
 
 DEST=/root/python
 
-pushd Python-${VERSION}
+pushd cpython-${VERSION}
 ./configure \
     --prefix=${DEST} \
     --with-openssl=${SSL_PREFIX} \
