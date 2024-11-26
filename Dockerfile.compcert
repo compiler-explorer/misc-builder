@@ -12,6 +12,7 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     openssh-client \ 
     ocaml-nox \             
     libgmp-dev \
+    pkg-config \
     opam
 
 RUN opam init --disable-sandboxing -n \
