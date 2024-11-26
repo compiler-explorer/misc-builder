@@ -11,8 +11,8 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     apt -q install -y \
     curl \
     git \
-    libssl-dev \
     unzip \
+    patchelf \
     xz-utils
 
 RUN mkdir -p /root
