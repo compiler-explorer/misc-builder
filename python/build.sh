@@ -18,6 +18,8 @@ fi
 REVISION="python-${VERSION}"
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
+curl -sL https://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tar.xz | tar Jxf -
+
 SSL_PREFIX=/root/ssl
 SSL_VERSION=3.3.2
 curl -sL https://github.com/openssl/openssl/releases/download/openssl-${SSL_VERSION}/openssl-${SSL_VERSION}.tar.gz | tar zxf -
@@ -35,7 +37,6 @@ export LD_LIBRARY_PATH=${SSL_PREFIX}/lib64
 
 DEST=/root/python
 
-curl -sL https://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tgz | tar zxf -
 pushd Python-${VERSION}
 ./configure \
     --prefix=${DEST} \
