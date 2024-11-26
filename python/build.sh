@@ -18,7 +18,7 @@ fi
 REVISION="python-${VERSION}"
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
-curl -sL https://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tar.xz | tar Jxf -
+curl -sL https://github.com/python/cpython/archive/refs/tags/v${VERSION}.tar.gz | tar zxf -
 
 SSL_PREFIX=/root/ssl
 SSL_VERSION=3.3.2
@@ -37,7 +37,7 @@ export LD_LIBRARY_PATH=${SSL_PREFIX}/lib64
 
 DEST=/root/python
 
-pushd Python-${VERSION}
+pushd cpython-${VERSION}
 ./configure \
     --prefix=${DEST} \
     --with-openssl=${SSL_PREFIX} \
@@ -52,8 +52,9 @@ popd
 # copy SSL SOs to the same directory as the native python modules
 cp ${SSL_PREFIX}/lib64/*.so* /root/python/lib/python*/lib-dynload/
 
-# then patch the ssl to look at $ORIGIN to find the crypto libs
+# then patch the ssl and hashlib to look at $ORIGIN to find the crypto libs
 patchelf --set-rpath \$ORIGIN /root/python/lib/python*/lib-dynload/_ssl*.so
+patchelf --set-rpath \$ORIGIN /root/python/lib/python*/lib-dynload/_hashlib*.so
 
 # strip executables
 find ${DEST} -type f -perm /u+x -exec strip -d {} \;
