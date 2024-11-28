@@ -25,7 +25,8 @@ RUN mkdir -p /vcpkg && git clone https://github.com/microsoft/vcpkg /vcpkg
 RUN curl -sL https://github.com/Kitware/CMake/releases/download/v3.30.3/cmake-3.30.3-linux-x86_64.tar.gz \
     | tar zx -C /usr --strip-components=1
 
-RUN bash -c "$(curl -s -o - https://raw.githubusercontent.com/trailofbits/vast/master/scripts/setup_llvm_dependencies.sh)"
+# Use a named SHA to get consistency.
+RUN bash -c "$(curl -s -o - https://raw.githubusercontent.com/trailofbits/vast/0d9e38bff5cd1dd8242adfa3977712d84a9f3c00/scripts/setup_llvm_dependencies.sh)"
 
 RUN /vcpkg/bootstrap-vcpkg.sh
 
