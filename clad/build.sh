@@ -4,24 +4,30 @@ set -euxo pipefail
 source common.sh
 
 VERSION=$1
+# versions like 1.8-clang-18.1.0
+CLANG_VERSION=${VERSION#*-clang-}
+if [[ "${CLANG_VERSION}" = "${VERSION}" ]]; then
+    CLANG_VERSION=18.1.0
+fi
+VERSION=${VERSION%-clang-*}
 if [[ "${VERSION}" = "trunk" ]]; then
-    VERSION=trunk-$(date +%Y%m%d)
+    VERSION=trunk-clang-${CLANG_VERSION}-$(date +%Y%m%d)
     BRANCH=master
     REMOTE=heads/${BRANCH}
 else
     BRANCH=v${VERSION}
     REMOTE=tags/${BRANCH}
+    VERSION=${VERSION}-clang-${CLANG_VERSION}
 fi
 
 URL=https://github.com/vgvassilev/clad
-CLANG_VERSION=18.1.0
 
 FULLNAME=clad-${VERSION}
 OUTPUT=$2/${FULLNAME}.tar.xz
 
 REVISION="$(get_remote_revision "${URL}" "${REMOTE}")"
 
-REVISION="clad-${REVISION}"
+REVISION="clad-${REVISION}-${CLANG_VERSION}"
 LAST_REVISION="${3:-}"
 
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
