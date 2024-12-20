@@ -1,0 +1,24 @@
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
+    apt install -y -q \
+    build-essential \
+    cmake \
+    curl \
+    git \
+    gnupg \
+    lsb-release \
+    ninja-build \
+    pip \
+    python3 \
+    software-properties-common \
+    wget
+
+RUN pip install lit
+
+RUN mkdir -p /root
+COPY clad /root/
+COPY common.sh /root/
+
+WORKDIR /root

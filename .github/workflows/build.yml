@@ -1,6 +1,7 @@
 name: Build
 on:
   push:
+    branches: [main]
   workflow_dispatch:
 jobs:     
   build-x86_64:
@@ -9,6 +10,7 @@ jobs:
       matrix:
         image:
         - compcert
+        - clad
         - heaptrack
         - hylo
         - iwyu
