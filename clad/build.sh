@@ -14,7 +14,7 @@ else
 fi
 
 URL=https://github.com/vgvassilev/clad
-CLANG_VERSION=18
+CLANG_VERSION=18.1.0
 
 FULLNAME=clad-${VERSION}
 OUTPUT=$2/${FULLNAME}.tar.xz
@@ -26,26 +26,28 @@ LAST_REVISION="${3:-}"
 
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
-bash -c "$(curl https://apt.llvm.org/llvm.sh)" "${CLANG_VERSION}"
-apt install libclang-${CLANG_VERSION}-dev
-
 PREFIX=$(pwd)/prefix
+LLVM=$(pwd)/llvm
 BUILD=$(pwd)/build
 SOURCE=$(pwd)/clad
 
+git clone --depth 1 -b llvmorg-${CLANG_VERSION} https://github.com/llvm/llvm-project.git "${LLVM}"
 git clone --depth 1 -b "${BRANCH}" "${URL}" "${SOURCE}"
 
 mkdir "${BUILD}"
 cd "${BUILD}"
-cmake "${SOURCE}" \
-    -DClang_DIR=/usr/lib/llvm-${CLANG_VERSION} \
-    -DLLVM_DIR=/usr/lib/llvm-${CLANG_VERSION} \
-    -DLLVM_ENABLE_RTTI=OFF \
-    -DLLVM_EXTERNAL_LIT="$(which lit)" \
+cmake "${LLVM}/llvm" \
+    -DLLVM_ENABLE_PROJECTS=clang \
+    -DLLVM_EXTERNAL_PROJECTS=clad \
+    -DLLVM_EXTERNAL_CLAD_SOURCE_DIR=${SOURCE} \
+    -DCMAKE_BUILD_TYPE="Release" \
+    -DLLVM_TARGETS_TO_BUILD=host \
+    -DLLVM_INSTALL_UTILS=ON \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -GNinja
 
-ninja
-ninja install
+ninja clang-headers
+ninja clad
+ninja install-clad
 
 complete "${PREFIX}" "${FULLNAME}" "${OUTPUT}"

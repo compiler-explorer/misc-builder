@@ -9,6 +9,7 @@ jobs:
       matrix:
         image:
         - compcert
+        - clad
         - heaptrack
         - hylo
         - iwyu
