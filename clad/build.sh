@@ -49,5 +49,6 @@ cmake "${LLVM}/llvm" \
 ninja clang-headers
 ninja clad
 ninja install-clad
+cp -r "${SOURCE}/include" "${PREFIX}"
 
 complete "${PREFIX}" "${FULLNAME}" "${OUTPUT}"
