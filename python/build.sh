@@ -49,18 +49,20 @@ make -j$(nproc)
 make install
 popd
 
-# copy SSL SOs to the same directory as the native python modules
-cp ${SSL_PREFIX}/lib64/*.so* /root/python/lib/python*/lib-dynload/
-
-# then patch the ssl and hashlib to look at $ORIGIN to find the crypto libs
-patchelf --set-rpath \$ORIGIN /root/python/lib/python*/lib-dynload/_ssl*.so
-patchelf --set-rpath \$ORIGIN /root/python/lib/python*/lib-dynload/_hashlib*.so
-
-# strip executables
-find ${DEST} -type f -perm /u+x -exec strip -d {} \;
-
 # delete tests and static libraries to save disk space
 find ${DEST} -type d -name test -exec rm -rf {} +
 find ${DEST} -type f -name '*.a' -delete
+
+PYTHON_SO_DIR=${DEST}/lib/python*/lib-dynload
+
+# copy SSL and any other system dependencies like libffi etc
+DEPS=$(env LD_LIBRARY_PATH=${SSL_PREFIX}/lib64 ldd ${PYTHON_SO_DIR}/*.so | grep ' => /' | grep -Ev 'lib(pthread|c|dl|rt)\.so' | awk '{ print $3 }' | sort | uniq)
+cp ${DEPS} ${PYTHON_SO_DIR}/
+
+# Patch all the SOs to look in their own directory.
+patchelf --set-rpath \$ORIGIN ${PYTHON_SO_DIR}/*.so
+
+# strip executables
+find ${DEST} -type f -perm /u+x -exec strip -d {} \;
 
 complete "${DEST}" "${FULLNAME}" "${OUTPUT}"
