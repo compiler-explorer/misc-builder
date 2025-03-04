@@ -1,0 +1,24 @@
+FROM ubuntu:20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN dpkg --add-architecture i386
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
+    apt install -y -q \
+    build-essential \
+    clang \
+    cmake \
+    curl \
+    git \
+    libclang-dev \
+    libssl-dev \
+    llvm \
+    pkg-config \
+    python3
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
+
+RUN mkdir -p /root
+COPY c2rust /root/
+COPY common.sh /root/
+
+WORKDIR /root
