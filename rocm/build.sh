@@ -88,19 +88,26 @@ ninja -C build install
 popd
 
 # roct-thunk-interface
-curl -sL https://github.com/ROCm/ROCT-Thunk-Interface/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-pushd ROCT-Thunk-Interface-${ROCM_VERSION}
-cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
-  -GNinja \
-  -DCMAKE_INSTALL_PREFIX="${DEST}"
-ninja -C build
-ninja -C build install
-popd
+if (( ROCM_MAJOR_MINOR < 603 )); then
+  curl -sL https://github.com/ROCm/ROCT-Thunk-Interface/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+  pushd ROCT-Thunk-Interface-${ROCM_VERSION}
+  cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
+    -GNinja \
+    -DCMAKE_INSTALL_PREFIX="${DEST}"
+  ninja -C build
+  ninja -C build install
+  popd
+fi
 
 # rocr-runtime
 curl -sL https://github.com/ROCm/ROCR-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
 pushd ROCR-Runtime-${ROCM_VERSION}
-cmake -Ssrc -Bbuild \
+if (( ROCM_MAJOR_MINOR < 603 )); then
+  SRC=src
+else
+  SRC=.
+fi
+cmake -S${SRC} -Bbuild \
   -GNinja \
   -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
   -DCMAKE_INSTALL_PREFIX="${DEST}"
@@ -132,7 +139,7 @@ if (( ROCM_MAJOR_MINOR >= 507 )); then
     -GNinja \
     -DHIP_COMMON_DIR="${SCRIPT_DIR}/HIP-${ROCM_VERSION}" \
     -DCLR_BUILD_HIP=ON \
-    -DCLR_BUILD_OCL=ON \
+    -DCLR_BUILD_OCL=OFF \
     -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
     -DCMAKE_INSTALL_PREFIX="${DEST}" \
     -DUSE_PROF_API=OFF \
