@@ -12,6 +12,7 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     libclang-dev \
     libssl-dev \
     llvm \
+    patchelf \
     pkg-config \
     python3
 
