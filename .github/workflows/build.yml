@@ -26,6 +26,7 @@ jobs:
         - mads
         - bloaty
         - lfortran
+        - c2rust
     steps:
     - name: Docker Setup Buildx
       uses: docker/setup-buildx-action@v2
