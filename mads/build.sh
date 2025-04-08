@@ -7,7 +7,7 @@ VERSION=$1
 if [[ "${VERSION}" = "trunk" ]]; then
     VERSION=trunk-$(date +%Y%m%d)
     BRANCH1=master
-    BRANCH2=master
+    BRANCH2=pas2js
 else
     echo "Versioned build not supported"
     return 1
