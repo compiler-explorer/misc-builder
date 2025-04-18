@@ -117,6 +117,12 @@ popd
 
 
 # hip
+if (( ROCM_MAJOR_MINOR >= 602 )); then
+  HIP_DIR=hip-${ROCM_VERSION}
+else
+  HIP_DIR=HIP-${ROCM_VERSION}
+fi
+rm -rf clr-${ROCM_VERSION} ${HIP_DIR}
 if (( ROCM_MAJOR_MINOR >= 507 )); then
   curl -sL https://github.com/ROCm/clr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
 else
@@ -137,12 +143,13 @@ if (( ROCM_MAJOR_MINOR >= 507 )); then
   pushd build
   cmake -S.. -B. -DCMAKE_BUILD_TYPE=Release \
     -GNinja \
-    -DHIP_COMMON_DIR="${SCRIPT_DIR}/HIP-${ROCM_VERSION}" \
+    -DHIP_COMMON_DIR="${SCRIPT_DIR}/${HIP_DIR}" \
     -DCLR_BUILD_HIP=ON \
     -DCLR_BUILD_OCL=OFF \
     -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
     -DCMAKE_INSTALL_PREFIX="${DEST}" \
     -DUSE_PROF_API=OFF \
+    -DHIP_ENABLE_ROCPROFILER_REGISTER=OFF \
     -DHIP_PLATFORM=amd \
     -DHIPCC_BIN_DIR="${DEST}/bin"
 
