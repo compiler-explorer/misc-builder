@@ -36,6 +36,20 @@ ${OPT}/infra/bin/ce_install install "clang-rocm ${VERSION}"
 COMP=${OPT}/clang-rocm-${VERSION}
 DEST=${OPT}/libs/rocm/${VERSION}
 
+# rocm-cmake
+if (( ROCM_MAJOR_MINOR >= 604 )); then
+  rm -rf rocm-cmake-${ROCM_VERSION}
+  curl -sL https://github.com/ROCm/rocm-cmake/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+  pushd rocm-cmake-${ROCM_VERSION}
+  cmake -S. -Bbuild \
+    -GNinja \
+    -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
+    -DCMAKE_INSTALL_PREFIX="${DEST}"
+  ninja -C build
+  ninja -C build install
+  popd
+fi
+
 rm -rf llvm-project-$ROCM_VERSION ROCm-Device-Libs-$ROCM_VERSION ROCm-CompilerSupport-$ROCM_VERSION HIPCC-$ROCM_VERSION
 if (( ROCM_MAJOR_MINOR < 601 )); then
     curl -sL https://github.com/ROCm/ROCm-Device-Libs/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
