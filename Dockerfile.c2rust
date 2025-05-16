@@ -14,9 +14,27 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     llvm \
     patchelf \
     pkg-config \
-    python3
+    python3.9 \
+    python3.9-venv \
+    zlib1g-dev
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
+
+RUN mkdir -p /opt/compiler-explorer
+
+# Add github public key to known_hosts, to enable interaction-less clone
+RUN mkdir /root/.ssh \
+    && touch /root/.ssh/known_hosts \
+    && ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/infra
+
+RUN cd /opt/compiler-explorer/infra && make ce
+
+# this needs to be kept in sync with the `ldPath` set for `c2rust` in
+# https://github.com/compiler-explorer/compiler-explorer/blob/main/etc/config/c.amazon.properties
+ENV CLANG=19.1.0
+
+RUN /opt/compiler-explorer/infra/bin/ce_install install "clang $CLANG"
 
 RUN mkdir -p /root
 COPY c2rust /root/

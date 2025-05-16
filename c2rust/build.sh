@@ -37,15 +37,9 @@ git clone --depth 1 -b "${BRANCH}" "${URL}" "${DIR}"
 
 cd $DIR
 rustup toolchain install
-cargo build --release
+LLVM_CONFIG_PATH=/opt/compiler-explorer/clang-$CLANG/bin/llvm-config cargo build --release
 mkdir -p "${OUT}"
 
 cp "${BUILD}/c2rust" "${BUILD}/c2rust-transpile" "${OUT}"
-
-# Copy all dependency .so files into the output dir and then set the RPATH to
-# $ORIGIN so that the local version gets used instead of whatever is insalled
-# globally.
-cp $(ldd "${OUT}"/* | grep -E  '=> /' | grep -Ev 'lib(pthread|c|dl|rt)\.so' | awk '{print $3}' | uniq) "${OUT}"
-patchelf --set-rpath '$ORIGIN' $"$OUT"/*
 
 complete "${OUT}" "c2rust-${VERSION}" "${OUTPUT}"
