@@ -42,4 +42,6 @@ mkdir -p "${OUT}"
 
 cp "${BUILD}/c2rust" "${BUILD}/c2rust-transpile" "${OUT}"
 
+patchelf --set-rpath "/opt/compiler-explorer/clang-$CLANG/lib" "$OUT"/*
+
 complete "${OUT}" "c2rust-${VERSION}" "${OUTPUT}"
