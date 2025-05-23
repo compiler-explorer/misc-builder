@@ -1,0 +1,29 @@
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
+    apt install -y -q \
+    build-essential \
+    curl \
+    file \
+    git \
+    patchelf \
+    python3 \
+    python3-venv \
+    xz-utils
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
+
+# Add github public key to known_hosts, to enable interaction-less clone
+RUN mkdir /root/.ssh \
+    && touch /root/.ssh/known_hosts \
+    && ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/infra
+
+RUN cd /opt/compiler-explorer/infra && make ce
+
+RUN mkdir -p /root
+COPY miri /root/
+COPY common.sh /root/
+
+WORKDIR /root
