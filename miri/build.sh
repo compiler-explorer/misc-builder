@@ -32,6 +32,11 @@ RUST=/opt/compiler-explorer/rust-miri-${VERSION}
 
 mv /opt/compiler-explorer/rust-nightly ${RUST}
 
+# install standard library sources
+curl --proto '=https' --tlsv1.2 -sSf https://static.rust-lang.org/dist/rust-src-nightly.tar.gz \
+    | tar zxf -
+./rust-src-nightly/install.sh --prefix=${RUST} --verbose
+
 # put `rustup` on `$PATH`
 source .cargo/env
 
@@ -43,5 +48,8 @@ export MIRI_SYSROOT=${RUST}/miri-sysroot
 for manifest_path in ${RUST}/lib/rustlib/manifest-rust-std-*; do
     cargo miri setup --target=${manifest_path#*/manifest-rust-std-} --verbose
 done
+
+# remove standard library sources again -- we don’t need them any more
+rm -rf ${RUST}/lib/rustlib/src
 
 complete "${RUST}" "rust-miri-${VERSION}" "${OUTPUT}"
