@@ -49,7 +49,7 @@ for manifest_path in ${RUST}/lib/rustlib/manifest-rust-std-*; do
     cargo miri setup --target=${manifest_path#*/manifest-rust-std-} --verbose
 done
 
-# remove standard library sources again -- we don’t need them any more
-rm -rf ${RUST}/lib/rustlib/src
+# remove standard library -- we don’t need it any more
+rm -rf ${RUST}/lib/rustlib
 
 complete "${RUST}" "rust-miri-${VERSION}" "${OUTPUT}"
