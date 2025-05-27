@@ -27,6 +27,7 @@ jobs:
         - bloaty
         - lfortran
         - c2rust
+        - miri
     steps:
     - name: Docker Setup Buildx
       uses: docker/setup-buildx-action@v2
