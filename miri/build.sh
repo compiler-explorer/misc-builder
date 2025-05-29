@@ -53,4 +53,4 @@ done
 # remove standard library -- we don’t need it any more
 rm -rf ${RUST}/lib/rustlib
 
-complete "${RUST}" "rust-miri-${VERSION}" "${OUTPUT}"
+complete "${RUST}" "${FULLNAME}" "${OUTPUT}"
