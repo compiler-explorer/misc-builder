@@ -11,7 +11,7 @@ if [[ "${VERSION}" != "nightly" ]]; then
     exit 1
 fi
 
-BASENAME=miri-${VERSION}-$(date +%Y%m%d)
+BASENAME=rust-miri-${VERSION}-$(date +%Y%m%d)
 FULLNAME="${BASENAME}.tar.xz"
 OUTPUT=$2/${FULLNAME}
 
