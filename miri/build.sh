@@ -4,7 +4,7 @@ set -euxo pipefail
 source common.sh
 
 VERSION="${1}"
-LAST_REVISION="${3-}"
+LAST_REVISION="${3:-}"
 
 if [[ "${VERSION}" != "nightly" ]]; then
     echo "Only support building nightly"
@@ -12,8 +12,8 @@ if [[ "${VERSION}" != "nightly" ]]; then
 fi
 
 BASENAME=rust-miri-${VERSION}-$(date +%Y%m%d)
-FULLNAME="${BASENAME}.tar.xz"
-OUTPUT=$2/${FULLNAME}
+FULLNAME="${BASENAME}"
+OUTPUT=$2/${FULLNAME}.tar.xz
 
 REVISION=${BASENAME}
 LAST_REVISION="${3:-}"
@@ -30,27 +30,27 @@ popd
 
 RUST=/opt/compiler-explorer/rust-miri-${VERSION}
 
-mv /opt/compiler-explorer/rust-nightly ${RUST}
+mv /opt/compiler-explorer/rust-nightly "${RUST}"
 
 # install standard library sources
 curl --proto '=https' --tlsv1.2 -sSf https://static.rust-lang.org/dist/rust-src-nightly.tar.gz \
     | tar zxf -
-./rust-src-nightly/install.sh --prefix=${RUST} --verbose
+./rust-src-nightly/install.sh --prefix="${RUST}" --verbose
 
 # put `rustup` on `$PATH`
 source .cargo/env
 
-rustup toolchain link miri ${RUST}
+rustup toolchain link miri "${RUST}"
 rustup default miri
 
 export MIRI_SYSROOT=${RUST}/miri-sysroot
 
-for manifest_path in ${RUST}/lib/rustlib/manifest-rust-std-*; do
+for manifest_path in "${RUST}"/lib/rustlib/manifest-rust-std-*; do
     # some targets can’t be built -- ignore those
-    cargo miri setup --target=${manifest_path#*/manifest-rust-std-} --verbose || true
+    cargo miri setup --target="${manifest_path#*/manifest-rust-std-}" --verbose || true
 done
 
 # remove standard library -- we don’t need it any more
-rm -rf ${RUST}/lib/rustlib
+rm -rf "${RUST}/lib/rustlib"
 
 complete "${RUST}" "${FULLNAME}" "${OUTPUT}"
