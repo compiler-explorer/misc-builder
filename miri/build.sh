@@ -26,7 +26,7 @@ git pull
 make ce
 popd
 
-/opt/compiler-explorer/infra/bin/ce_install --enable nightly install compilers/rust/newer/nightly nightly
+/opt/compiler-explorer/infra/bin/ce_install --enable nightly install "compilers/rust/newer/nightly nightly"
 
 RUST=/opt/compiler-explorer/rust-miri-${VERSION}
 
@@ -46,7 +46,8 @@ rustup default miri
 export MIRI_SYSROOT=${RUST}/miri-sysroot
 
 for manifest_path in ${RUST}/lib/rustlib/manifest-rust-std-*; do
-    cargo miri setup --target=${manifest_path#*/manifest-rust-std-} --verbose
+    # some targets can’t be built -- ignore those
+    cargo miri setup --target=${manifest_path#*/manifest-rust-std-} --verbose || true
 done
 
 # remove standard library -- we don’t need it any more
