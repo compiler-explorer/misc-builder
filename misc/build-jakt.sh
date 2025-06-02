@@ -52,7 +52,7 @@ fi
 
 SUBDIR=jakt-${VERSION}
 STAGING_DIR=/opt/compiler-explorer/jakt-${VERSION}
-GXXPATH=/opt/compiler-explorer/gcc-12.1.0
+GXXPATH=/opt/compiler-explorer/gcc-15.1.0
 export PATH=${PATH}:/cmake/bin
 
 rm -rf "${STAGING_DIR}"
