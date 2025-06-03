@@ -1,0 +1,43 @@
+FROM ubuntu:24.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN dpkg --add-architecture i386
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
+    apt install -y -q \
+    cmake \
+    build-essential \
+    curl \
+    git \
+    make \
+    s3cmd \
+    xz-utils \
+    unzip \
+    ninja-build \
+    file \
+    xxd \
+    pkg-config \
+    perl
+
+
+RUN cd /tmp && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -rf aws*
+
+RUN mkdir -p /opt/compiler-explorer
+
+# Add github public key to known_hosts, to enable interaction-less clone
+RUN mkdir /root/.ssh \
+    && touch /root/.ssh/known_hosts \
+    && ssh-keyscan github.com >> /root/.ssh/known_hosts
+RUN git clone https://github.com/compiler-explorer/infra /opt/compiler-explorer/infra
+
+RUN cd /opt/compiler-explorer/infra && make ce
+RUN /opt/compiler-explorer/infra/bin/ce_install install 'x86/gcc 15.1.0'
+
+RUN mkdir -p /root
+COPY jakt /root/
+COPY common.sh /root/
+
+WORKDIR /root
