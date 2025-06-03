@@ -63,7 +63,7 @@ git clone -q --depth 1 --single-branch -b "${BRANCH}" "${URL}" "${SUBDIR}"
 
 cd "${SUBDIR}"
 
-CXX=${GXXPATH}/bin/g++ cmake -B build -GNinja
+CXX="$GXXPATH/bin/g++" cmake -B build -GNinja
 cmake --build build
 
 cd build
