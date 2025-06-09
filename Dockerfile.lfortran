@@ -8,6 +8,7 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     cmake \
     curl \
     git \
+    libunwind-dev \
     libzstd-dev \
     llvm-12-dev \
     ninja-build \
