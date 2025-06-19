@@ -50,6 +50,7 @@ cmake "${LLVM}/llvm" \
     -DLLVM_TARGETS_TO_BUILD=host \
     -DLLVM_INSTALL_UTILS=ON \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DCLAD_DISABLE_TESTS=ON \
     -GNinja
 
 ninja clang-headers
