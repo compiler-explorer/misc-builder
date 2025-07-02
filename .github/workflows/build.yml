@@ -25,6 +25,7 @@ jobs:
         - rust-linux
         - vast
         - mads
+        - nix
         - bloaty
         - lfortran
         - c2rust
