@@ -7,7 +7,7 @@ VERSION=$1
 # versions like 1.8-clang-18.1.0
 CLANG_VERSION=${VERSION#*-clang-}
 if [[ "${CLANG_VERSION}" = "${VERSION}" ]]; then
-    CLANG_VERSION=21.1.0
+    CLANG_VERSION=20.1.0
 fi
 VERSION=${VERSION%-clang-*}
 if [[ "${VERSION}" = "trunk" ]]; then
