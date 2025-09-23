@@ -49,7 +49,7 @@ jobs:
     - name: Docker Hub Image Digest
       run: echo ${{ steps.hub_build.outputs.digest }}
   build-arm64:
-    runs-on: [self-hosted, ce, linux, arm64]
+    runs-on: 	ubuntu-latest-arm
     strategy:
       matrix:
         image:
