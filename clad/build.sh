@@ -14,6 +14,11 @@ if [[ "${VERSION}" = "trunk" ]]; then
     VERSION=trunk-clang-${CLANG_VERSION}-$(date +%Y%m%d)
     BRANCH=master
     REMOTE=heads/${BRANCH}
+elif [[ "${VERSION}" = "trunk-clang-21.1.0" ]]; then
+    VERSION=trunk-clang-${CLANG_VERSION}-$(date +%Y%m%d)
+    BRANCH=master
+    REMOTE=heads/${BRANCH}
+    CLANG_VERSION=21.1.0
 else
     BRANCH=v${VERSION}
     REMOTE=tags/${BRANCH}
