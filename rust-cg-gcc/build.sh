@@ -76,18 +76,6 @@ pushd rustc_codegen_gcc
 cp config.example.toml config.toml
 
 ./y.sh prepare
-
-# This may fail because it can't find libgccjit that it downloads itself....
-./y.sh build --sysroot --release || true
-
-# So restart it after the failed execution.
-# Following y.sh needs to find the libgccjit that is getting downloaded
-SO_PATH=$(find -name "libgccjit.so")
-LIBRARY_PATH=$(dirname "$PWD"/"$SO_PATH")
-LD_LIBRARY_PATH=$(dirname "$PWD"/"$SO_PATH")
-export LIBRARY_PATH
-
-# ... this one should work.
 ./y.sh build --sysroot --release
 
 popd
