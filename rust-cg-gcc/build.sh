@@ -68,73 +68,17 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
 
 source  "$PWD/rustup/env"
 
-##
-## Build customized GCC with libgccjit
-##
-
-git clone --depth 1 "${GCC_URL}" --branch "${GCC_BRANCH}"
-
-# clean
-rm -rf gcc-build  gcc-install
-mkdir -p gcc-build gcc-install
-
-echo "Downloading prerequisites"
-pushd gcc
-./contrib/download_prerequisites
-popd
-
-pushd gcc-build
-LANGUAGES=jit,c++
-PKGVERSION="Compiler-Explorer-Build-${REVISION}"
-
-CONFIG=("--enable-checking=release"
-        "--enable-host-shared"
-        "--build=x86_64-linux-gnu"
-        "--host=x86_64-linux-gnu"
-        "--target=x86_64-linux-gnu"
-        "--disable-bootstrap"
-        "--enable-multiarch"
-        "--with-abi=m64"
-        "--with-multilib-list=m32,m64,mx32"
-        "--enable-multilib"
-        "--enable-clocale=gnu"
-        "--enable-languages=${LANGUAGES}"
-        "--enable-ld=yes"
-        "--enable-gold=yes"
-        "--enable-libstdcxx-debug"
-        "--enable-libstdcxx-time=yes"
-        "--enable-linker-build-id"
-        "--enable-lto"
-        "--enable-plugins"
-        "--enable-threads=posix"
-        "--with-pkgversion=\"${PKGVERSION}\""
-## this is needed for all libs (gmp, mpfr, …) to be PIC so as to not cause issue
-## when they are statically linked in the libgccjit.so
-        "--with-pic")
-
-../gcc/configure --prefix="${PREFIX}" "${CONFIG[@]}"
-
-make -j"$(nproc)"
-make -j"$(nproc)" install-strip
-popd
-
-libgccjit_path=$(dirname $(readlink -f `find "$PREFIX" -name libgccjit.so`))
-
-##
-## Back to rustc_cg_gcc for building
-##
 pushd rustc_codegen_gcc
 
-echo "gcc-path = \"$libgccjit_path\"" > config.toml
+
+# Do default config, as described in the "Quick start" guide on the project's
+# page.
+cp config.example.toml config.toml
 
 ./y.sh prepare
 ./y.sh build --sysroot --release
 
 popd
-
-##
-## Everything should be correctly built
-##
 
 ##
 ## Before packaging, remove build deps
@@ -158,7 +102,11 @@ mkdir -p toolroot
 mv rustup/toolchains/*/* toolroot/
 
 # libgccjit
-mv ./gcc-install/lib/libgccjit.so* toolroot/lib
+find -name "libgccjit.so" -exec mv {} toolroot/lib ';'
+
+pushd toolroot/lib
+ln -s libgccjit.so libgccjit.so.0
+popd
 
 # cg_gcc backend
 mv ./rustc_codegen_gcc/target/release/librustc_codegen_gcc.so toolroot/lib
@@ -177,7 +125,6 @@ patchelf --set-rpath '$ORIGIN/' toolroot/lib/librustc_codegen_gcc.so
 ## Simple sanity checks:
 ## - check for assembly output
 ## - check for correct exec output
-
 
 echo "fn main() -> Result<(), &'static str> { Ok(()) }" > /tmp/test.rs
 
