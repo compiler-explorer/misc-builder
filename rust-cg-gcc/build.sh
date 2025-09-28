@@ -33,6 +33,23 @@ initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
 OUTPUT=$(realpath "${OUTPUT}")
 
+#
+# Needed because the later y.sh will call "git am" and this needs user info.
+git config --global user.email "nope@nope.com"
+git config --global user.name "John Nope"
+
+rm -rf  build-rustc-cg-gcc
+mkdir -p build-rustc-cg-gcc
+
+pushd build-rustc-cg-gcc
+PREFIX=$(pwd)/gcc-install
+
+export CARGO_HOME=$PWD/rustup
+export RUSTUP_HOME=$PWD/rustup
+
+export PATH=$RUSTUP_HOME/bin:$PATH
+
+
 ##
 ## Build customized GCC with libgccjit
 ##
@@ -79,23 +96,7 @@ CONFIG=("--enable-checking=release"
 
 libgccjit_path=$(dirname $(readlink -f `find "$PREFIX" -name libgccjit.so`))
 
-#
-# Needed because the later y.sh will call "git am" and this needs user info.
-git config --global user.email "nope@nope.com"
-git config --global user.name "John Nope"
-
-rm -rf  build-rustc-cg-gcc
-mkdir -p build-rustc-cg-gcc
-
-pushd build-rustc-cg-gcc
-PREFIX=$(pwd)/gcc-install
-
-export CARGO_HOME=$PWD/rustup
-export RUSTUP_HOME=$PWD/rustup
-
-export PATH=$RUSTUP_HOME/bin:$PATH
-
-## Download rustc_cg_gcc
+## Checkout rustc_cg_gcc
 git clone --depth 1 "${CG_GCC_URL}" --branch "${CG_GCC_BRANCH}"
 
 ## Download rustup and install it in a local dir
