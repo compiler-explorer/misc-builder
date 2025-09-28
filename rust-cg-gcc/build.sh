@@ -96,9 +96,6 @@ CONFIG=("--enable-checking=release"
 
 libgccjit_path=$(dirname $(readlink -f `find "$PREFIX" -name libgccjit.so`))
 
-## Checkout rustc_cg_gcc
-git clone --depth 1 "${CG_GCC_URL}" --branch "${CG_GCC_BRANCH}"
-
 ## Download rustup and install it in a local dir
 ## Installs :
 ## - minimal profile
