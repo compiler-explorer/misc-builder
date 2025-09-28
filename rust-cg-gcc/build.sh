@@ -19,7 +19,7 @@ GCC_URL="https://github.com/antoyo/gcc.git"
 GCC_BRANCH="master"
 
 CG_GCC_BRANCH="master"
-CG_GCC_URL="https://github.com/rust-lang/rustc_codegen_gcc.git"
+CG_GCC_URL="https://github.com/rust-lang/gcc"
 
 GCC_REVISION=$(get_remote_revision "${GCC_URL}" "heads/${GCC_BRANCH}")
 CG_GCC_REVISION=$(get_remote_revision "${CG_GCC_URL}" "heads/${CG_GCC_BRANCH}")
@@ -33,6 +33,53 @@ initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
 OUTPUT=$(realpath "${OUTPUT}")
 
+##
+## Build customized GCC with libgccjit
+##
+## We can't use prebuilt ones because our runner are using ubuntu 22.04 which
+## does not have a recent enough glibc (error at runtime).
+
+git clone --depth 1 "${GCC_URL}" --branch "${GCC_BRANCH}"
+
+rm -rf gcc-build  gcc-install
+mkdir -p gcc-build "$PREFIX"
+
+pushd gcc-build
+LANGUAGES=jit
+PKGVERSION="Compiler-Explorer-Build-${REVISION}"
+
+CONFIG=("--enable-checking=release"
+        "--enable-host-shared"
+        "--build=x86_64-linux-gnu"
+        "--host=x86_64-linux-gnu"
+        "--target=x86_64-linux-gnu"
+        "--disable-bootstrap"
+        "--enable-multiarch"
+        "--with-abi=m64"
+        "--with-multilib-list=m32,m64,mx32"
+        "--enable-multilib"
+        "--enable-clocale=gnu"
+        "--enable-languages=${LANGUAGES}"
+        "--enable-ld=yes"
+        "--enable-gold=yes"
+        "--enable-libstdcxx-debug"
+        "--enable-libstdcxx-time=yes"
+        "--enable-linker-build-id"
+        "--enable-lto"
+        "--enable-plugins"
+        "--enable-threads=posix"
+        "--with-pkgversion=\"${PKGVERSION}\""
+        "--with-pic")
+
+ ../gcc/configure --prefix="${PREFIX}" "${CONFIG[@]}"
+
+ make -j"$(nproc)"
+ make -j"$(nproc)" install-strip
+ popd
+
+libgccjit_path=$(dirname $(readlink -f `find "$PREFIX" -name libgccjit.so`))
+
+#
 # Needed because the later y.sh will call "git am" and this needs user info.
 git config --global user.email "nope@nope.com"
 git config --global user.name "John Nope"
@@ -73,6 +120,9 @@ pushd rustc_codegen_gcc
 
 # Do default config, as described in the "Quick start" guide on the project's
 # page.
+echo "gcc-path = \"$libgccjit_path\"" > config.toml
+echo "download-gccjit = false" >> config.toml
+
 cp config.example.toml config.toml
 
 ./y.sh prepare
@@ -102,11 +152,7 @@ mkdir -p toolroot
 mv rustup/toolchains/*/* toolroot/
 
 # libgccjit
-find -name "libgccjit.so" -exec mv {} toolroot/lib ';'
-
-pushd toolroot/lib
-ln -s libgccjit.so libgccjit.so.0
-popd
+mv $PREFIX/lib/libgccjit.so* toolroot/lib
 
 # cg_gcc backend
 mv ./rustc_codegen_gcc/target/release/librustc_codegen_gcc.so toolroot/lib
