@@ -75,7 +75,7 @@ mv ../.clang-format "${STAGING_DIR}/"
 
 rm "${STAGING_DIR}/bin/jakt"
 rm "${STAGING_DIR}/include/runtime"
-ln -sr "${STAGING_DIR}/bin/jakt-stage1" "${STAGING_DIR}/bin/jakt"
+ln -sr "${STAGING_DIR}/bin/jakt_stage1" "${STAGING_DIR}/bin/jakt"
 ln -sr "${STAGING_DIR}/runtime" "${STAGING_DIR}/include/runtime"
 
 export XZ_DEFAULTS="-T 0"
