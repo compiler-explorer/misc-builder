@@ -29,6 +29,7 @@ jobs:
         - lfortran
         - c2rust
         - miri
+        - jakt
     steps:
     - name: Docker Setup Buildx
       uses: docker/setup-buildx-action@v2
