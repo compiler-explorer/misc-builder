@@ -19,7 +19,7 @@ GCC_URL="https://github.com/rust-lang/gcc"
 GCC_BRANCH="master"
 
 CG_GCC_BRANCH="master"
-CG_GCC_URL="github.com/rust-lang/rustc_codegen_gcc"
+CG_GCC_URL="https://github.com/rust-lang/rustc_codegen_gcc"
 
 GCC_REVISION=$(get_remote_revision "${GCC_URL}" "heads/${GCC_BRANCH}")
 CG_GCC_REVISION=$(get_remote_revision "${CG_GCC_URL}" "heads/${CG_GCC_BRANCH}")
