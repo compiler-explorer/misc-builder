@@ -124,8 +124,6 @@ pushd rustc_codegen_gcc
 echo "gcc-path = \"$libgccjit_path\"" > config.toml
 echo "download-gccjit = false" >> config.toml
 
-cp config.example.toml config.toml
-
 ./y.sh prepare
 ./y.sh build --sysroot --release
 
