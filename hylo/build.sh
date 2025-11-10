@@ -37,7 +37,26 @@ git clone -q --depth 1 --single-branch --recursive -b "${BRANCH}" "${URL}" "hylo
 
 cd "hylo-${VERSION}"
 swift package resolve
-.build/checkouts/Swifty-LLVM/Tools/make-pkgconfig.sh /usr/local/lib/pkgconfig/llvm.pc
+
+# Create LLVM pkgconfig file locally since Swifty-LLVM no longer provides the script
+# Use PKG_CONFIG_PATH to avoid system-level changes
+PKGCONFIG_DIR="${ROOT}/pkgconfig"
+mkdir -p "${PKGCONFIG_DIR}"
+cat > "${PKGCONFIG_DIR}/llvm.pc" << EOF
+prefix=$(llvm-config --prefix)
+libdir=$(llvm-config --libdir)
+includedir=$(llvm-config --includedir)
+
+Name: LLVM
+Description: Low Level Virtual Machine
+Version: $(llvm-config --version)
+Requires:
+Libs: -L\${libdir} $(llvm-config --libs --system-libs)
+Cflags: -I\${includedir}
+EOF
+
+export PKG_CONFIG_PATH="${PKGCONFIG_DIR}:${PKG_CONFIG_PATH:-}"
+
 ./Tools/set-hc-version.sh
 swift build --static-swift-stdlib -c release --product hc
 
