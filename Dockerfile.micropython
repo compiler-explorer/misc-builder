@@ -1,0 +1,19 @@
+FROM ubuntu:20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -y -q && apt-get upgrade -y -q && apt-get update -y -q && \
+    apt-get install -y -q \
+    python3 \
+    build-essential \
+    libreadline-dev \
+    libffi-dev \
+    git \
+    pkg-config \
+    gcc-arm-none-eabi \
+    libnewlib-arm-none-eabi
+
+RUN mkdir -p /root
+COPY micropython /root/
+COPY common.sh /root/
+
+WORKDIR /root

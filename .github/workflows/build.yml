@@ -24,6 +24,7 @@ jobs:
         - rust-linux
         - vast
         - mads
+        - micropython
         - nix
         - bloaty
         - lfortran

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -ex
+source common.sh
+
+VERSION=$1
+
+URL=https://github.com/micropython/micropython.git
+REPO=micropython
+FULLNAME=micropython-${VERSION}.tar.xz
+OUTPUT=$2/${FULLNAME}
+
+REVISION="micropython-${VERSION}"
+LAST_REVISION="${3:-}"
+
+DEST="/opt/compiler-explorer/${REVISION}"
+
+initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
+
+if [[ $VERSION == 'preview' ]]; then
+    git clone --depth 1 "${URL}" "${REPO}"
+else
+    git clone --depth 1 "${URL}" -b "v${VERSION}" "${REPO}"
+fi;
+
+(
+    cd "${REPO}"
+    set +u
+    source tools/ci.sh
+    ci_unix_standard_build
+)
+
+mkdir -p "${DEST}" "${DEST}/bin" "${DEST}/tools" "${DEST}/py"
+cp "${REPO}/mpy-cross/build/mpy-cross" "${DEST}/bin/mpy-cross"
+cp "${REPO}/ports/unix/build-standard/micropython" "${DEST}/bin/micropython"
+cp "${REPO}/tools/mpy-tool.py" "${DEST}/tools/mpy-tool.py"
+cp "${REPO}/py/makeqstrdata.py" "${DEST}/py/makeqstrdata.py"
+
+complete "${DEST}" "${FULLNAME}" "${OUTPUT}"
