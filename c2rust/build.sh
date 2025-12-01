@@ -3,6 +3,7 @@
 set -exu
 source common.sh
 source $HOME/.cargo/env
+export PATH="$HOME/.local/bin:$PATH"
 
 ## $1 : version, like v0.9 (tag) or master (branch)
 ## $2 : destination: a directory or S3 path (eg. s3://...)

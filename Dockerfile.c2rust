@@ -20,6 +20,9 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
 
+# Install uv (required for c2rust-refactor build scripts)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
 RUN mkdir -p /opt/compiler-explorer
 
 # Add github public key to known_hosts, to enable interaction-less clone
