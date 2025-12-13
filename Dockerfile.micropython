@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y -q && apt-get upgrade -y -q && apt-get update -y -q && \
@@ -8,6 +8,7 @@ RUN apt-get update -y -q && apt-get upgrade -y -q && apt-get update -y -q && \
     libreadline-dev \
     libffi-dev \
     git \
+    patchelf \
     pkg-config \
     gcc-arm-none-eabi \
     libnewlib-arm-none-eabi
