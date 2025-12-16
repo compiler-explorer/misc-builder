@@ -1,0 +1,14 @@
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update -y -q && apt upgrade -y -q && \
+    apt install -y -q \
+    build-essential \
+    git \
+    xz-utils
+
+RUN mkdir -p /root
+COPY ncc-ng /root/
+COPY common.sh /root/
+
+WORKDIR /root
