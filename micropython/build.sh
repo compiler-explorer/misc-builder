@@ -10,8 +10,13 @@ REPO=micropython
 FULLNAME=micropython-${VERSION}.tar.xz
 OUTPUT=$2/${FULLNAME}
 
-REVISION="micropython-${VERSION}"
 LAST_REVISION="${3:-}"
+
+if [[ $VERSION == 'preview' ]]; then
+    REVISION="micropython-preview-$(date +%Y%m%d)"
+else
+    REVISION="micropython-${VERSION}"
+fi;
 
 DEST="/opt/compiler-explorer/${REVISION}"
 
