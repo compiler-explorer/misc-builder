@@ -36,7 +36,7 @@ cp "${REPO}/ports/unix/build-standard/micropython" "${DEST}/bin/micropython"
 cp "${REPO}/tools/mpy-tool.py" "${DEST}/tools/mpy-tool.py"
 cp "${REPO}/py/makeqstrdata.py" "${DEST}/py/makeqstrdata.py"
 
-cp $(ldd "${DEST}/bin/mpy-cross" "${DEST}/bin/micropython" | grep -E  '=> /' | grep -Ev 'lib(pthread|c|dl|rt).so' | awk '{print $3}') "${DEST}/lib"
+cp $(ldd "${DEST}/bin/mpy-cross" "${DEST}/bin/micropython" | grep -E  '=> /' | grep -Ev 'lib(pthread|c|dl|rt|m).so' | awk '{print $3}') "${DEST}/lib"
 patchelf --set-rpath '$ORIGIN/../lib' "${DEST}/bin/mpy-cross" "${DEST}/bin/micropython"
 
 complete "${DEST}" "${FULLNAME}" "${OUTPUT}"
