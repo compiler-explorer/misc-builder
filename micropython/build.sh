@@ -7,8 +7,6 @@ VERSION=$1
 
 URL=https://github.com/micropython/micropython.git
 REPO=micropython
-FULLNAME=micropython-${VERSION}.tar.xz
-OUTPUT=$2/${FULLNAME}
 
 LAST_REVISION="${3:-}"
 
@@ -17,6 +15,9 @@ if [[ $VERSION == 'preview' ]]; then
 else
     REVISION="micropython-${VERSION}"
 fi;
+
+FULLNAME="${REVISION}.tar.xz"
+OUTPUT="$2/${FULLNAME}"
 
 DEST="/opt/compiler-explorer/${REVISION}"
 
