@@ -1,0 +1,23 @@
+FROM ubuntu:22.04
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get --assume-yes update \
+    && DEBIAN_FRONTEND=noninteractive apt-get --assume-yes \
+    --no-install-recommends install \
+        build-essential \
+        ca-certificates \
+        curl \
+        git \
+        xz-utils
+
+RUN curl --proto '=https' --tlsv1.2 --silent --show-error --fail https://sh.rustup.rs \
+    | sh -s -- \
+        -y \
+        --no-modify-path \
+        --default-toolchain stable \
+        --profile minimal
+
+RUN mkdir -p /root
+COPY ccc /root/
+COPY common.sh /root/
+
+WORKDIR /root
