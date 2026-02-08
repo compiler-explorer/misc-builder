@@ -11,8 +11,8 @@ source "$HOME/.cargo/env"
 VERSION="${1}"
 LAST_REVISION="${3:-}"
 
-if [[ "${VERSION}" != "main" ]]; then
-    echo "Only support building main"
+if [[ "${VERSION}" != "main" && "${VERSION}" != "trunk" ]]; then
+    echo "Only support building main/trunk"
     exit 1
 fi
 
