@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         image:
+        - ccc
         - compcert
         - clad
         - heaptrack
