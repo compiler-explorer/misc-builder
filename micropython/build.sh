@@ -19,6 +19,7 @@ fi;
 
 FULLNAME="${REVISION}.tar.xz"
 OUTPUT="$2/${FULLNAME}"
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 DEST="/opt/compiler-explorer/${REVISION}"
 
@@ -32,6 +33,10 @@ fi;
 
 make -C "${REPO}/ports/unix" submodules
 make -C "${REPO}/ports/unix" deplibs
+
+for patch in "${SCRIPT_DIR}"/patches/*.patch; do
+    patch --unified --strip=1 --dir="${REPO}" --input="${patch}" || true
+done
 
 (
     cd "${REPO}"

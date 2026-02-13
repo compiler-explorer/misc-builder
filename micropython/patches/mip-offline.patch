@@ -1,0 +1,23 @@
+--- a/lib/micropython-lib/micropython/mip/mip/__init__.py
++++ b/lib/micropython-lib/micropython/mip/mip/__init__.py
+@@ -6 +6,19 @@
+-import requests
++class _offline:
++    @classmethod
++    def get(cls, url):
++        return cls(url)
++    def __init__(self, url):
++        import sys
++        path = url.replace(_PACKAGE_INDEX, sys.executable.replace("bin/micropython", "mip"))
++        try:
++            self.raw = open(path, "rb")
++            self.status_code = 200
++        except OSError:
++            self.raw = None
++            self.status_code = 404
++    def json(self):
++        import json
++        return json.load(self.raw)
++    def close(self):
++        return self.raw and self.raw.close()
++requests = _offline
