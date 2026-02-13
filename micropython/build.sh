@@ -4,6 +4,7 @@ set -ex
 source common.sh
 
 VERSION=$1
+VARIANT=standard
 
 URL=https://github.com/micropython/micropython.git
 REPO=micropython
@@ -29,16 +30,24 @@ else
     git clone --depth 1 "${URL}" -b "v${VERSION}" "${REPO}"
 fi;
 
+make -C "${REPO}/ports/unix" submodules
+make -C "${REPO}/ports/unix" deplibs
+
 (
     cd "${REPO}"
     set +u
     source tools/ci.sh
-    ci_unix_standard_build
+
+    make ${MAKEOPTS} -C mpy-cross
+    make ${MAKEOPTS} -C ports/unix VARIANT=${VARIANT}
+
+    ci_unix_build_ffi_lib_helper gcc
+)
 )
 
 mkdir -p "${DEST}" "${DEST}/bin" "${DEST}/tools" "${DEST}/py" "${DEST}/lib"
 cp "${REPO}/mpy-cross/build/mpy-cross" "${DEST}/bin/mpy-cross"
-cp "${REPO}/ports/unix/build-standard/micropython" "${DEST}/bin/micropython"
+cp "${REPO}/ports/unix/build-${VARIANT}/micropython" "${DEST}/bin/micropython"
 cp "${REPO}/tools/mpy-tool.py" "${DEST}/tools/mpy-tool.py"
 cp "${REPO}/py/makeqstrdata.py" "${DEST}/py/makeqstrdata.py"
 
