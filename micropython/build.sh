@@ -7,7 +7,7 @@ VERSION=$1
 VARIANT=standard
 
 URL=https://github.com/micropython/micropython.git
-REPO=micropython
+REPO=/tmp/micropython
 
 LAST_REVISION="${3:-}"
 
@@ -43,6 +43,13 @@ make -C "${REPO}/ports/unix" deplibs
 
     ci_unix_build_ffi_lib_helper gcc
 )
+
+(
+    cd "${REPO}/lib/micropython-lib/"
+    set +u
+    source tools/ci.sh
+
+    PACKAGE_INDEX_PATH="${DEST}/mip" ci_build_packages_compile_index
 )
 
 mkdir -p "${DEST}" "${DEST}/bin" "${DEST}/tools" "${DEST}/py" "${DEST}/lib"
