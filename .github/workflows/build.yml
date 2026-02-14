@@ -19,6 +19,7 @@ jobs:
         - misc
         - nasm
         - ncc-ng
+        - perl
         - python
         - pythran
         - rocm
