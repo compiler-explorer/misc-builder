@@ -1,0 +1,20 @@
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -y -q && apt-get upgrade -y -q && \
+    apt-get install -y -q \
+    bison \
+    build-essential \
+    ca-certificates \
+    curl \
+    flex \
+    git \
+    texinfo \
+    wget \
+    xz-utils
+
+RUN mkdir -p /root
+COPY archiesdk /root/
+COPY common.sh /root/
+
+WORKDIR /root
