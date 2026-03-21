@@ -7,8 +7,10 @@ VERSION=$1
 if [[ "${VERSION}" = "trunk" ]]; then
     VERSION=trunk-$(date +%Y%m%d)
     BRANCH=master
+    REF_TYPE=heads
 else
     BRANCH=v${VERSION}
+    REF_TYPE=tags
 fi
 
 URL=https://github.com/stardot/beebasm
@@ -16,7 +18,7 @@ URL=https://github.com/stardot/beebasm
 FULLNAME=beebasm-${VERSION}.tar.xz
 OUTPUT=$2/${FULLNAME}
 
-REVISION="beebasm-$(get_remote_revision "${URL}" "heads/${BRANCH}")"
+REVISION="beebasm-$(get_remote_revision "${URL}" "${REF_TYPE}/${BRANCH}")"
 LAST_REVISION="${3:-}"
 
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
