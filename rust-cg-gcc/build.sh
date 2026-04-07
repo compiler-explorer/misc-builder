@@ -151,7 +151,9 @@ mkdir -p toolroot
 mv rustup/toolchains/*/* toolroot/
 
 # libgccjit
-mv $PREFIX/lib/libgccjit.so* toolroot/lib
+libgccjit_dir=toolroot/lib/rustlib/x86_64-unknown-linux-gnu/codegen-backends/lib/x86_64-unknown-linux-gnu
+mkdir -p $libgccjit_dir
+mv $PREFIX/lib/libgccjit.so* $libgccjit_dir
 
 # cg_gcc backend
 mv ./rustc_codegen_gcc/target/release/librustc_codegen_gcc.so toolroot/lib
