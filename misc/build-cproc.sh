@@ -17,6 +17,8 @@ fi
 
 URL="https://git.sr.ht/~mcf/cproc"
 BRANCH="master"
+QBE_URL="git://c9x.me/qbe.git"
+QBE_BRANCH="master"
 
 BASENAME=cproc-${VERSION}-$(date +%Y%m%d)
 FULLNAME=${BASENAME}.tar.xz
@@ -33,7 +35,8 @@ else
 fi
 
 REVISION=$(git ls-remote --heads "${URL}" "refs/heads/${BRANCH}" | cut -f 1)
-echo "ce-build-revision:${REVISION}"
+QBE_REVISION=$(git ls-remote --heads "${QBE_URL}" "refs/heads/${QBE_BRANCH}" | cut -f 1)
+echo "ce-build-revision:${REVISION}_qbe-${QBE_REVISION}"
 echo "ce-build-output:${OUTPUT}"
 
 if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
@@ -68,6 +71,11 @@ git am ../../cproc-version.patch
 
 make -j"$(nproc)"
 make install DESTDIR="$PWD/root" BINDIR=/bin
+
+git clone --depth 1 "${QBE_URL}" --branch "${QBE_BRANCH}"
+pushd qbe
+make install DESTDIR="$PWD/../root" BINDIR=/bin
+popd
 
 pushd root
 
