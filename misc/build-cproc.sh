@@ -1,12 +1,12 @@
 #!/bin/bash
 
 ## $1 : version, currently cproc does not have any and only uses master branch.
-## $2 : destination: a directory or S3 path (eg. s3://...)
+## $2 : destination: a directory
 ## $3 : last revision successfully build (optional)
 
 set -ex
+source common.sh
 
-ROOT=$PWD
 VERSION="${1}"
 LAST_REVISION="${3-}"
 
@@ -20,62 +20,24 @@ BRANCH="master"
 QBE_URL="git://c9x.me/qbe.git"
 QBE_BRANCH="master"
 
-BASENAME=cproc-${VERSION}-$(date +%Y%m%d)
-FULLNAME=${BASENAME}.tar.xz
-OUTPUT=${ROOT}/${FULLNAME}
-S3OUTPUT=
-if [[ $2 =~ ^s3:// ]]; then
-    S3OUTPUT=$2
-else
-    if [[ -d "${2}" ]]; then
-        OUTPUT=$2/${FULLNAME}
-    else
-        OUTPUT=${2-$OUTPUT}
-    fi
-fi
+CPROC_REVISION=$(get_remote_revision "${URL}" "heads/${BRANCH}")
+QBE_REVISION=$(get_remote_revision "${QBE_URL}" "heads/${QBE_BRANCH}")
+REVISION="${CPROC_REVISION}_qbe-${QBE_REVISION}"
 
-REVISION=$(git ls-remote --heads "${URL}" "refs/heads/${BRANCH}" | cut -f 1)
-QBE_REVISION=$(git ls-remote --heads "${QBE_URL}" "refs/heads/${QBE_BRANCH}" | cut -f 1)
-echo "ce-build-revision:${REVISION}_qbe-${QBE_REVISION}"
-echo "ce-build-output:${OUTPUT}"
+FULLNAME=cproc-${VERSION}-$(date +%Y%m%d)
+OUTPUT=$(realpath "$2/${FULLNAME}.tar.xz")
 
-if [[ "${REVISION}" == "${LAST_REVISION}" ]]; then
-    echo "ce-build-status:SKIPPED"
-    exit
-fi
+initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
-## From now, no unset variable
-set -u
-
-OUTPUT=$(realpath "${OUTPUT}")
-
-rm -rf  build-cproc
-mkdir -p build-cproc
-
-pushd build-cproc
+DESTDIR="${PWD}/stage"
 
 git clone --depth 1 "${URL}" --branch "${BRANCH}"
 pushd cproc
-
 ./configure
-
-make -j"$(nproc)"
-make install DESTDIR="$PWD/root" BINDIR=/bin
+make -j"$(nproc)" install DESTDIR="${DESTDIR}" BINDIR=/bin
+popd
 
 git clone --depth 1 "${QBE_URL}" --branch "${QBE_BRANCH}"
-pushd qbe
-make install DESTDIR="$PWD/../root" BINDIR=/bin
-popd
+make -C qbe -j"$(nproc)" install DESTDIR="${DESTDIR}" BINDIR=/bin
 
-pushd root
-
-export XZ_DEFAULTS="-T 0"
-tar Jcf "${OUTPUT}" --transform "s,^./,./${BASENAME}/," ./
-
-if [[ -n "${S3OUTPUT}" ]]; then
-    aws s3 cp --storage-class REDUCED_REDUNDANCY "${OUTPUT}" "${S3OUTPUT}"
-fi
-
-popd
-popd
-echo "ce-build-status:OK"
+complete "${DESTDIR}" "${FULLNAME}" "${OUTPUT}"
