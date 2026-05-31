@@ -17,6 +17,7 @@ jobs:
         - hylo
         - iwyu
         - lc3
+        - lua
         - misc
         - nasm
         - ncc-ng
