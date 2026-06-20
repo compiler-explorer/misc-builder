@@ -1,0 +1,19 @@
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -y -q && \
+    apt-get install -y -q --no-install-recommends \
+        ca-certificates \
+        curl \
+        git \
+        libmpc3 \
+        libmpfr6 \
+        patchelf \
+        xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /root
+COPY sfpi /root/
+COPY common.sh /root/
+
+WORKDIR /root
