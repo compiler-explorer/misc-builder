@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## $1 : version (only "main" supported)
 ## $2 : destination directory

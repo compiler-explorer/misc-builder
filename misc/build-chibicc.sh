@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## $1 : version, chibicc does not have any and only uses main branch.
 ## $2 : destination: a directory
