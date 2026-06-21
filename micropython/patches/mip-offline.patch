@@ -8,7 +8,7 @@
 +        return cls(url)
 +    def __init__(self, url):
 +        import sys
-+        path = url.replace(_PACKAGE_INDEX, sys.executable.replace("bin/micropython", "mip"))
++        path = url.replace("https://micropython.org/pi/v2", sys.executable.replace("bin/micropython", "mip"))
 +        try:
 +            self.raw = open(path, "rb")
 +            self.status_code = 200
