@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## $1 : version, like v0.9 (tag) or master (branch)
 ## $2 : destination: a directory or S3 path (eg. s3://...)

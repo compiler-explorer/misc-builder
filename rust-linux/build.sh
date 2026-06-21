@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## $1 : version
 ## $2 : destination: a directory
