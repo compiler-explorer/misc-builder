@@ -1,0 +1,29 @@
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
+    apt install -y -q \
+    build-essential \
+    cmake \
+    curl \
+    git \
+    libffi-dev \
+    libxml2-dev \
+    libzstd-dev \
+    lsb-release \
+    wget \
+    xz-utils \
+    zlib1g-dev
+
+RUN apt-get install -y -q software-properties-common && \
+    wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/llvm.asc && \
+    add-apt-repository -y "deb https://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-18 main" && \
+    apt update -y -q && \
+    apt install -y -q llvm-18-dev llvm-18 && \
+    wget -qO- https://github.com/Kitware/CMake/releases/download/v4.1.0/cmake-4.1.0-linux-aarch64.tar.gz | tar zx -C /usr --strip-components=1
+
+RUN mkdir -p /root
+COPY aburi /root/
+COPY common.sh /root/
+
+WORKDIR /root
