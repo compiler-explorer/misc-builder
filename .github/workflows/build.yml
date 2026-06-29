@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         image:
+        - aburi
         - archiesdk
         - ccc
         - compcert
