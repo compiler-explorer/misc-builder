@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## $1 : version, currently cproc does not have any and only uses master branch.
 ## $2 : destination: a directory

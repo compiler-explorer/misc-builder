@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # perl/build.sh $VERSION /outdir $OPTREVISION
 # $VERSION can be a released version or one of the perl development
 # branches, including "blead" (aka trunk), maint-5.xx

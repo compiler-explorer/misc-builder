@@ -1,4 +1,9 @@
-#!/bin/bash Please-source-me
+#!/usr/bin/env bash
+
+(return 0 2>/dev/null) || {
+    >&2 echo "common.sh must be sourced, not executed"
+    exit 1
+}
 
 # Common utilities and setup for builds
 
