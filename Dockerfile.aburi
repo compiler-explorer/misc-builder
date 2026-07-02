@@ -20,7 +20,7 @@ RUN apt-get install -y -q software-properties-common && \
     add-apt-repository -y "deb https://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-18 main" && \
     apt update -y -q && \
     apt install -y -q llvm-18-dev llvm-18 && \
-    wget -qO- https://github.com/Kitware/CMake/releases/download/v4.1.0/cmake-4.1.0-linux-aarch64.tar.gz | tar zx -C /usr --strip-components=1
+    wget -qO- https://github.com/Kitware/CMake/releases/download/v4.1.0/cmake-4.1.0-linux-x86_64.tar.gz | tar zx -C /usr --strip-components=1
 
 RUN mkdir -p /root
 COPY aburi /root/
