@@ -18,6 +18,11 @@ if [[ "${VERSION}" =~ ([0-9]+)\.([0-9]+)\.[^.]+ ]]; then
     ROCM_MAJOR_MINOR=$(( ROCM_MAJOR * 100 + ROCM_MINOR ))
 fi
 
+ROCM_TAG=${ROCM_VERSION}
+if (( ROCM_MAJOR_MINOR >= 714 )); then
+    ROCM_TAG=therock-${ROCM_MAJOR}.${ROCM_MINOR}
+fi
+
 initialise "${VERSION}" "${OUTPUT}"
 
 OUTPUT=$(realpath "${OUTPUT}")
@@ -38,9 +43,9 @@ DEST=${OPT}/libs/rocm/${VERSION}
 
 # rocm-cmake
 if (( ROCM_MAJOR_MINOR >= 604 )); then
-  rm -rf rocm-cmake-${ROCM_VERSION}
-  curl -sL https://github.com/ROCm/rocm-cmake/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
-  pushd rocm-cmake-${ROCM_VERSION}
+  rm -rf rocm-cmake-${ROCM_TAG}
+  curl -sL https://github.com/ROCm/rocm-cmake/archive/refs/tags/${ROCM_TAG}.tar.gz | tar xz
+  pushd rocm-cmake-${ROCM_TAG}
   cmake -S. -Bbuild \
     -GNinja \
     -DCMAKE_PREFIX_PATH="${COMP};${DEST}" \
@@ -56,7 +61,7 @@ if (( ROCM_MAJOR_MINOR < 601 )); then
     curl -sL https://github.com/ROCm/ROCm-CompilerSupport/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
     curl -sL https://github.com/ROCm/HIPCC/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
 else
-    git clone --depth 1 --single-branch -b "$ROCM_VERSION" "https://github.com/ROCm/llvm-project.git" "llvm-project-$ROCM_VERSION"
+    git clone --depth 1 --single-branch -b "$ROCM_TAG" "https://github.com/ROCm/llvm-project.git" "llvm-project-$ROCM_VERSION"
     ln -fs llvm-project-$ROCM_VERSION/amd/device-libs ROCm-Device-Libs-$ROCM_VERSION
     mkdir -p ROCm-CompilerSupport-$ROCM_VERSION/lib
     ln -fs ../../llvm-project-$ROCM_VERSION/amd/comgr ROCm-CompilerSupport-$ROCM_VERSION/lib/comgr
@@ -114,7 +119,15 @@ if (( ROCM_MAJOR_MINOR < 603 )); then
 fi
 
 # rocr-runtime
-curl -sL https://github.com/ROCm/ROCR-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+if (( ROCM_MAJOR_MINOR >= 714 )); then
+  # Starting from ROCm 7.14 most components were moved to the rocm-systems monorepo, so set up compatibility symlinks
+  ROCM_SYSTEMS_DIR=rocm-systems-${ROCM_TAG}
+  rm -rf "${ROCM_SYSTEMS_DIR}" ROCR-Runtime-${ROCM_VERSION}
+  git clone --depth 1 --single-branch -b "${ROCM_TAG}" https://github.com/ROCm/rocm-systems.git "${ROCM_SYSTEMS_DIR}"
+  ln -fs "${ROCM_SYSTEMS_DIR}"/projects/rocr-runtime ROCR-Runtime-${ROCM_VERSION}
+else
+  curl -sL https://github.com/ROCm/ROCR-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+fi
 pushd ROCR-Runtime-${ROCM_VERSION}
 if (( ROCM_MAJOR_MINOR < 603 )); then
   SRC=src
@@ -137,14 +150,21 @@ else
   HIP_DIR=HIP-${ROCM_VERSION}
 fi
 rm -rf clr-${ROCM_VERSION} ${HIP_DIR}
-if (( ROCM_MAJOR_MINOR >= 507 )); then
+if (( ROCM_MAJOR_MINOR >= 714 )); then
+  ln -fs "${ROCM_SYSTEMS_DIR}"/projects/clr clr-${ROCM_VERSION}
+elif (( ROCM_MAJOR_MINOR >= 507 )); then
   curl -sL https://github.com/ROCm/clr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
 else
   git clone --depth 1 https://github.com/ROCm/hipamd.git -b ${ROCM_VERSION}
   curl -sL https://github.com/ROCm/ROCclr/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
   curl -sL https://github.com/ROCm/ROCm-OpenCL-Runtime/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
 fi
-curl -sL https://github.com/ROCm/HIP/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+
+if (( ROCM_MAJOR_MINOR >= 714 )); then
+  ln -fs "${ROCM_SYSTEMS_DIR}"/projects/hip "${HIP_DIR}"
+else
+  curl -sL https://github.com/ROCm/HIP/archive/refs/tags/${ROCM_VERSION}.tar.gz | tar xz
+fi
 
 if (( ROCM_MAJOR_MINOR >= 507 )); then
   pushd clr-${ROCM_VERSION}
