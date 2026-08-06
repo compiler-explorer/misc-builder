@@ -59,6 +59,13 @@ cmake "${LLVM}/llvm" \
     -GNinja
 
 ninja clang-headers
+# LLVM 22 made llvm/Analysis/TargetLibraryInfo.inc a tablegen-generated header, produced by
+# the analysis_gen target. Clad's targets don't depend on it, and we deliberately never
+# build LLVM proper here, so nothing else generates it. Guard on the .td rather than on the
+# LLVM version so this stays correct if the rule moves again.
+if [[ -f "${LLVM}/llvm/include/llvm/Analysis/TargetLibraryInfo.td" ]]; then
+    ninja analysis_gen
+fi
 ninja clad
 ninja install-clad
 cp -r "${SOURCE}/include" "${PREFIX}"
