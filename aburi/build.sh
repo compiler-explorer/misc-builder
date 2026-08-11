@@ -1,53 +1,73 @@
 #!/bin/bash
 
+## $1 : version: the upstream branch to build (defaults to "godbolt")
+## $2 : destination: a directory
+## $3 : last revision successfully built
+
 set -ex
 source common.sh
 
-VERSION="${1}"
+VERSION="${1:-godbolt}"
 LAST_REVISION="${3-}"
 
-if [[ "${VERSION}" != "atta-mills" ]]; then
-    echo "Only support building atta-mills branch"
-    exit 1
-fi
-
-FULLNAME=aburi-${VERSION}
-OUTPUT=$(realpath "$2/${FULLNAME}.tar.xz")
-
 URL="https://github.com/serjective/aburi.git"
-BRANCH="atta-mills"
-SDK_REPO="https://github.com/alexey-lysiuk/macos-sdk.git"
-SDK_BRANCH="heads/main"
+BRANCH="${VERSION}"
 
-ABURI_REVISION=$(get_remote_revision "${URL}" "heads/${BRANCH}")
-SDK_REVISION=$(get_remote_revision "${SDK_REPO}" "${SDK_BRANCH}")
-REVISION="${ABURI_REVISION}_sdk-${SDK_REVISION}"
+REVISION=$(get_remote_revision "${URL}" "heads/${BRANCH}")
+
+FULLNAME=aburi-${VERSION}-$(date +%Y%m%d)
+OUTPUT=$(realpath "$2/${FULLNAME}.tar.xz")
 
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 
-# Build aburi
+STAGING_DIR="${PWD}/stage"
+
 git clone --depth 1 "${URL}" --branch "${BRANCH}" aburi-source
-cmake -S aburi-source -B aburi-source/build -DCMAKE_BUILD_TYPE=Release -DLLVM_DIR=/usr/lib/llvm-18/lib/cmake/llvm
+
+# Three things this configure line has to get right:
+#
+# * Clang, not gcc. Adinkra is aburi's own C++ standard library and needs a Clang
+#   host compiler; CMakeLists.txt only *warns* and silently turns Adinkra off for
+#   anything else, so a gcc build succeeds and ships a compiler with no working
+#   hosted C++. Checked for real after the install below.
+# * libdir "lib". The driver looks for its builtin headers at a hardcoded
+#   <prefix>/lib/aburi/builtin_headers, which GNUInstallDirs' Debian multiarch
+#   default would miss.
+# * --as-needed. Debian's LLVMSupport target names /usr/lib/.../libz3.so in its
+#   interface link libraries, so without this aburi gets a DT_NEEDED on
+#   libz3.so.4 despite referencing no Z3 symbol, and won't start on a host that
+#   hasn't got it.
+cmake -S aburi-source -B aburi-source/build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_C_COMPILER=clang-22 \
+    -DCMAKE_CXX_COMPILER=clang++-22 \
+    -DLLVM_DIR=/usr/lib/llvm-22/lib/cmake/llvm \
+    -DCMAKE_INSTALL_PREFIX="${STAGING_DIR}" \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_EXE_LINKER_FLAGS=-Wl,--as-needed
 cmake --build aburi-source/build -j"$(nproc)"
 
-# Fetch macOS SDK headers. Pick the newest MacOSX*.sdk the repo currently ships
-# rather than pinning a version: upstream rolls forward (e.g. 26.4 -> 26.5) and a
-# hardcoded name silently breaks this build the moment it's removed.
-git clone --depth 1 --filter=blob:none --sparse "${SDK_REPO}" macos-sdk-repo
-SDK_SDK=$(git -C macos-sdk-repo ls-tree -d --name-only HEAD | grep -E '^MacOSX[0-9.]+\.sdk$' | sort -V | tail -1)
-if [[ -z "${SDK_SDK}" ]]; then
-    echo "No MacOSX*.sdk directory found in ${SDK_REPO}" >&2
-    exit 1
-fi
-echo "Using macOS SDK: ${SDK_SDK}"
-git -C macos-sdk-repo sparse-checkout set "${SDK_SDK}/usr/include"
+# Install rather than copying the binary out of the build tree: the driver
+# resolves its builtin headers and Adinkra relative to its own location, so it
+# only works from a proper <prefix>/bin + <prefix>/lib + <prefix>/include layout.
+cmake --install aburi-source/build
 
-# Stage. Install the SDK to a fixed, version-independent path (macos-sdk/) so the
-# compiler's --sysroot never changes when the SDK version rolls forward.
-STAGING_DIR="${PWD}/stage"
-mkdir -p "${STAGING_DIR}/bin"
-mkdir -p "${STAGING_DIR}/macos-sdk"
-cp aburi-source/build/aburi "${STAGING_DIR}/bin/"
-cp -a "macos-sdk-repo/${SDK_SDK}/." "${STAGING_DIR}/macos-sdk/"
+# Aburi's Adinkra links end with an unconditional "-lc++abi", so libc++abi is a
+# runtime dependency of every hosted C++ program it builds and CE's hosts have
+# not got one. Ship the shared build beside Adinkra: the static libc++abi.a
+# collides with Adinkra's own operator-new handlers, so it has to be the .so.
+cp -a /usr/lib/x86_64-linux-gnu/libc++abi.so* "${STAGING_DIR}/lib/"
+
+# Prove Adinkra really made it in, rather than trusting a configure step whose
+# opt-out is only a warning. No macOS SDK is staged: for a Linux target aburi
+# takes its C headers from the host root and its C++ headers from Adinkra, and
+# an explicit --sysroot would in fact switch Adinkra back off.
+test -d "${STAGING_DIR}/lib/aburi/builtin_headers"
+test -f "${STAGING_DIR}/include/adinkra/c++/v1/vector"
+test -f "${STAGING_DIR}/lib/libadinkra.a"
+"${STAGING_DIR}/bin/aburi" --version
+
+# Everything listed here has to exist on CE's hosts.
+objdump -p "${STAGING_DIR}/bin/aburi" | grep NEEDED
 
 complete "${STAGING_DIR}" "${FULLNAME}" "${OUTPUT}"
