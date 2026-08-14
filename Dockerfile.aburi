@@ -15,9 +15,6 @@ RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
     xz-utils \
     zlib1g-dev
 
-# Refresh the index in this layer: the update above sits in a separate, cachable
-# layer, so once it is cached these installs resolve against a stale index and
-# 404 as soon as a package (systemd, here) rolls forward on the mirror.
 RUN apt-get update -y -q && \
     apt-get install -y -q software-properties-common && \
     wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/llvm.asc && \
