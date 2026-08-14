@@ -49,5 +49,10 @@ cmake --install ./builds/compiler-explorer --prefix "$STAGING_DIR"
 # This code copied and modified from compiler-explorer/cobol-builder/build/build.sh
 cp $(ldd "${STAGING_DIR}/bin/vast-front" | grep -E  '=> /' | grep -Ev 'lib(pthread|c|dl|rt).so' | awk '{print $3}') "${STAGING_DIR}/lib"
 patchelf --set-rpath '$ORIGIN/../lib' $(find ${STAGING_DIR}/lib/ -name \*.so\*)
+# ...and the executables themselves. vast's own install writes them a RUNPATH of the
+# literal "/../lib": the $ORIGIN has been expanded away before it is written, so they
+# cannot see the libraries staged above and fail to start with "libclang-cpp.so.19.1:
+# cannot open shared object file". See compiler-explorer/misc-builder#102.
+patchelf --set-rpath '$ORIGIN/../lib' "${STAGING_DIR}"/bin/*
 
 complete "${STAGING_DIR}" "vast-${VERSION}" "${OUTPUT}"
