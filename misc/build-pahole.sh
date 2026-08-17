@@ -39,7 +39,7 @@ else
 fi
 
 PAHOLE_REVISION=$(git ls-remote --heads ${URL} refs/heads/${BRANCH} | cut -f 1)
-REVISION="pahole-${JAKT_REVISION}-elfutils-${ELFUTILS_VERSION}"
+REVISION="pahole-${PAHOLE_REVISION}-elfutils-${ELFUTILS_VERSION}"
 
 echo "ce-build-revision:${REVISION}"
 echo "ce-build-output:${OUTPUT}"
