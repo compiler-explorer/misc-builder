@@ -28,6 +28,7 @@ jobs:
         - pythran
         - rocm
         - rust-linux
+        - sdcc
         - sfpi
         - vast
         - mads
