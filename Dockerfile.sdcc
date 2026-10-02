@@ -1,0 +1,21 @@
+FROM ubuntu:24.04
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get --assume-yes update \
+    && DEBIAN_FRONTEND=noninteractive apt-get --assume-yes \
+    --no-install-recommends install \
+        bison \
+        build-essential \
+        ca-certificates \
+        flex \
+        git \
+        gputils \
+        libboost-dev \
+        texinfo \
+        xz-utils \
+        zlib1g-dev
+
+RUN mkdir -p /root
+COPY sdcc /root/
+COPY common.sh /root/
+
+WORKDIR /root
