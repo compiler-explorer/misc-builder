@@ -1,6 +1,7 @@
 #!/bin/bash
 
-## $1 : version: a release tag (e.g. 7.0) or "trunk" for the main branch
+## $1 : version: a release tag (e.g. 7.0), "trunk" for the main branch, or a
+##      fork identifier for a different fork
 ## $2 : destination: a directory
 ## $3 : last revision successfully built
 
@@ -12,15 +13,24 @@ LAST_REVISION="${3-}"
 
 URL="https://github.com/edgcpp/compiler.git"
 
-if [[ "${VERSION}" == "trunk" ]]; then
+case $VERSION in
+trunk)
     BRANCH=main
     REVISION=$(get_remote_revision "${URL}" "heads/${BRANCH}")
     FULLNAME=edg-${VERSION}-$(date +%Y%m%d)
-else
+    ;;
+notadragon-contracts-p3850)
+    URL="https://github.com/notadragon/edgcpp_compiler.git"
+    BRANCH=contracts-p3850
+    REVISION=$(get_remote_revision "${URL}" "heads/${BRANCH}")
+    FULLNAME=edg-${VERSION}-$(date +%Y%m%d)
+    ;;
+*)
     BRANCH="${VERSION}"
     REVISION=$(get_remote_revision "${URL}" "tags/${BRANCH}")
     FULLNAME=edg-${VERSION}
-fi
+    ;;
+esac
 
 OUTPUT=$(realpath "$2/${FULLNAME}.tar.xz")
 
