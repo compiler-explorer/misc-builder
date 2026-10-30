@@ -20,9 +20,8 @@ fi
 
 URL="https://github.com/AbsInt/CompCert.git"
 
-BASENAME=ccomp-${VERSION}-${ARCH}
-FULLNAME=${BASENAME}.tar.xz
-OUTPUT=$3/${FULLNAME}
+FULLNAME=CompCert-${ARCH}-${VERSION}
+OUTPUT=$3/ccomp-${VERSION}-${ARCH}.tar.xz
 
 REVISION=$(get_remote_revision "${URL}" "${BRANCH}")
 initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
@@ -30,7 +29,7 @@ initialise "${REVISION}" "${OUTPUT}" "${LAST_REVISION}"
 # The path to compcert will be hardcoded in a config file (share/compcert.ini).
 # This makes the compiler not relocatable without editing this file beforehand.
 OPT=/opt/compiler-explorer/compcert
-STAGING_DIR=${OPT}/CompCert-${ARCH}-${VERSION}
+STAGING_DIR=${OPT}/${FULLNAME}
 
 rm -rf "${STAGING_DIR}"
 mkdir -p "${STAGING_DIR}"
