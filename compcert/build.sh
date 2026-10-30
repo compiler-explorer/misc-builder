@@ -44,4 +44,4 @@ eval "$(opam env)"
 make "-j$(nproc)"
 make install
 
-complete "${DEST}" "${FULLNAME}" "${OUTPUT}"
+complete "${STAGING_DIR}" "${FULLNAME}" "${OUTPUT}"
