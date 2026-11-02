@@ -32,8 +32,19 @@ popd
 # Python seems to hardcode ssldir/lib and not ssldir/lib64
 ln -s lib64 ${SSL_PREFIX}/lib
 
+# Python 3.15+ no longer bundles libmpdec (for _decimal), and Ubuntu 24.04 doesn't package it.
+DEPS_PREFIX=/root/deps
+MPDECIMAL_VERSION=4.0.1
+curl -sL https://www.bytereef.org/software/mpdecimal/releases/mpdecimal-${MPDECIMAL_VERSION}.tar.gz | tar zxf -
+pushd mpdecimal-${MPDECIMAL_VERSION}
+./configure --prefix=${DEPS_PREFIX} --disable-cxx
+make -j$(nproc)
+make install
+popd
+export PKG_CONFIG_PATH=${DEPS_PREFIX}/lib/pkgconfig
+
 # The rpath below seems to not quite "take"
-export LD_LIBRARY_PATH=${SSL_PREFIX}/lib64
+export LD_LIBRARY_PATH=${SSL_PREFIX}/lib64:${DEPS_PREFIX}/lib
 
 DEST=/root/python
 
@@ -56,11 +67,11 @@ find ${DEST} -type f -name '*.a' -delete
 PYTHON_SO_DIR=${DEST}/lib/python*/lib-dynload
 
 # copy SSL and any other system dependencies like libffi etc
-DEPS=$(env LD_LIBRARY_PATH=${SSL_PREFIX}/lib64 ldd ${PYTHON_SO_DIR}/*.so | grep ' => /' | grep -Ev 'lib(pthread|c|dl|rt)\.so' | awk '{ print $3 }' | sort | uniq)
+DEPS=$(env LD_LIBRARY_PATH=${LD_LIBRARY_PATH} ldd ${PYTHON_SO_DIR}/*.so | grep ' => /' | grep -Ev 'lib(pthread|c|dl|rt)\.so' | awk '{ print $3 }' | sort | uniq)
 cp ${DEPS} ${PYTHON_SO_DIR}/
 
-# Patch all the SOs to look in their own directory.
-patchelf --set-rpath \$ORIGIN ${PYTHON_SO_DIR}/*.so
+# Patch all the SOs, including the versioned libs copied above, to look in their own directory.
+patchelf --set-rpath \$ORIGIN ${PYTHON_SO_DIR}/*.so ${PYTHON_SO_DIR}/*.so.*
 
 # strip executables
 find ${DEST} -type f -perm /u+x -exec strip -d {} \;
