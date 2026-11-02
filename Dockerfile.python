@@ -1,18 +1,21 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 # Enable source repositories so we can use `apt build-dep` to get all the
-# build dependencies for Python 3.5+.
-RUN sed -i -- 's/#deb-src/deb-src/g' /etc/apt/sources.list && \
-    sed -i -- 's/# deb-src/deb-src/g' /etc/apt/sources.list
+# build dependencies for Python.
+RUN sed -i -- 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt update -y -q && apt upgrade -y -q && apt update -y -q && \
-    apt -q build-dep -y python3.8 && \
+    apt -q build-dep -y python3.12 && \
     apt -q install -y \
     curl \
     git \
+    libzstd-dev \
+    pkg-config \
+    tk-dev \
     unzip \
     patchelf \
+    uuid-dev \
     xz-utils
 
 RUN mkdir -p /root
